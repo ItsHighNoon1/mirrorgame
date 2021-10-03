@@ -36,7 +36,7 @@ public class Loader {
 	}
 	
 	public Texture loadTexture(String path) {
-		// STBImage.stbi_set_flip_vertically_on_load(true);
+		STBImage.stbi_set_flip_vertically_on_load(true);
 		
 		// i love pointers!
 		int[] w = new int[1];
@@ -44,7 +44,7 @@ public class Loader {
 		int[] comp = new int[1];
 		
 		// load using stb, glTexImage2D, free using stb
-		ByteBuffer imageData = STBImage.stbi_load(ByteBuffer.wrap(path.getBytes()), w, h, comp, STBImage.STBI_rgb_alpha);
+		ByteBuffer imageData = STBImage.stbi_load(path, w, h, comp, STBImage.STBI_rgb_alpha);
 		int texture = GL11.glGenTextures();
 		textures.add(texture);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);

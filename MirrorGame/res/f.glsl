@@ -4,6 +4,9 @@ in vec2 v_texCoords;
 
 out vec4 color;
 
+uniform sampler2D u_texture;
+
 void main() {
-	color = vec4(v_texCoords.x, v_texCoords.y, v_texCoords.x / 2.0 + v_texCoords.y / 2.0, 1.0);
+	color = texture(u_texture, v_texCoords);
+	if (color.a < 0.5) discard;
 }

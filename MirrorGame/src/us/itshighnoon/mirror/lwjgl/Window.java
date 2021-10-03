@@ -1,5 +1,6 @@
 package us.itshighnoon.mirror.lwjgl;
 
+import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWWindowSizeCallbackI;
 import org.lwjgl.opengl.GL;
@@ -53,5 +54,15 @@ public class Window {
 	
 	public boolean shouldClose() {
 		return GLFW.glfwWindowShouldClose(window);
+	}
+	
+	public Vector2i getWindowDims() {
+		Vector2i dims = new Vector2i(-1, -1);
+		int[] w = new int[1];
+		int[] h = new int[1];
+		GLFW.glfwGetWindowSize(window, w, h);
+		dims.x = w[0];
+		dims.y = h[0];
+		return dims;
 	}
 }

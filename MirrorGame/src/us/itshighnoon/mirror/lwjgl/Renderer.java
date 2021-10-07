@@ -13,12 +13,12 @@ public class Renderer {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 	}
 	
-	public void render(VAO vao, Texture texture) {
-		GL30.glBindVertexArray(vao.getVaoId());
+	public void render(TexturedModel model) {
+		GL30.glBindVertexArray(model.getVao().getVaoId());
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureId());
-		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, vao.getVertexCount());
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getTextureId());
+		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, model.getVao().getVertexCount());
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
 	}

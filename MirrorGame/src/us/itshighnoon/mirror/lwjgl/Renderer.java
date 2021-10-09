@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import us.itshighnoon.mirror.Entity;
+import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
 import us.itshighnoon.mirror.lwjgl.shader.Shader;
 import us.itshighnoon.mirror.lwjgl.shader.UniformMat4;
 
@@ -35,12 +36,17 @@ public class Renderer {
 		entities.get(model).add(0, e); // i love dsa !
 	}
 	
-	public void drawBase(Shader shader, UniformMat4 matrixUniform, Entity camera, Vector2i screenDims) {
+	public void drawBase(Shader shader, UniformMat4 matrixUniform, Entity camera, Vector2i targetDims) {
+		// since there is framebuffer rendering going on we need a glviewport call
+		GL11.glViewport(0, 0, targetDims.x, targetDims.y);
+		
 		// vp matrix is not going to change so lets premultiply
 		Matrix4f vpMatrix = new Matrix4f();
 		Matrix4f mvpMatrix = new Matrix4f();
-		float aspect = (float)screenDims.x / (float)screenDims.y;
+		float aspect = (float)targetDims.x / (float)targetDims.y;
 		vpMatrix.setOrtho(-aspect, aspect, -1.0f, 1.0f, -1.0f, 1.0f);
+		vpMatrix.scale(1.0f / camera.getScale());
+		vpMatrix.rotate(-camera.getRotation(), 0.0f, 0.0f, 1.0f);
 		vpMatrix.translate(-camera.getPosition().x, -camera.getPosition().y, 0.0f);
 		
 		shader.start();
@@ -53,6 +59,7 @@ public class Renderer {
 			for (Entity e : modelEntities) {
 				vpMatrix.translate(e.getPosition().x, e.getPosition().y, 0.0f, mvpMatrix); // without dest, vp gets modified
 				mvpMatrix.rotate(e.getRotation(), 0.0f, 0.0f, 1.0f);
+				mvpMatrix.scale(e.getScale());
 				matrixUniform.loadMatrix(mvpMatrix);
 				GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, model.getVao().getVertexCount());
 			}

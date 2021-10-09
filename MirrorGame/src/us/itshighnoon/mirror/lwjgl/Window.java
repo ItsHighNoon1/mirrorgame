@@ -2,9 +2,7 @@ package us.itshighnoon.mirror.lwjgl;
 
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWWindowSizeCallbackI;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 
 public class Window {
 	private static final int OPENGL_MAJOR = 4;
@@ -31,15 +29,6 @@ public class Window {
 		// set up the context
 		GLFW.glfwMakeContextCurrent(window);
 		GL.createCapabilities();
-		GL11.glViewport(0, 0, width, height); // TODO resize callback
-		
-		// resize callback
-		GLFW.glfwSetWindowSizeCallback(window, new GLFWWindowSizeCallbackI() {
-			@Override
-			public void invoke(long ptr, int w, int h) {
-				GL11.glViewport(0, 0, w, h);
-			}
-		});
 	}
 	
 	public Window() {

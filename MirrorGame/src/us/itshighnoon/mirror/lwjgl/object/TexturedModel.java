@@ -1,4 +1,4 @@
-package us.itshighnoon.mirror.lwjgl;
+package us.itshighnoon.mirror.lwjgl.object;
 
 public class TexturedModel {
 	private VAO vao;

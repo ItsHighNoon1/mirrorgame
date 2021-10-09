@@ -3,6 +3,7 @@ package us.itshighnoon.mirror;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 
+import us.itshighnoon.mirror.lwjgl.Input;
 import us.itshighnoon.mirror.lwjgl.Loader;
 import us.itshighnoon.mirror.lwjgl.Renderer;
 import us.itshighnoon.mirror.lwjgl.TexturedModel;
@@ -25,17 +26,23 @@ public class Main {
 		TexturedModel square = new TexturedModel(vao, loader.loadTexture("res/square.png"));
 		Entity ent = new Entity(triangle, new Vector2f(-1.0f, 1.0f), 0.3f);
 		Entity ent2 = new Entity(square, new Vector2f(1.0f, 0.0f), -0.5f);
-		Camera cam = new Camera(-1.0f, 1.0f);
+		Entity cam = new Entity(null, new Vector2f(-1.0f, 1.0f), 0.0f);
+		
+		Input input = new Input();
 		
 		while (!window.shouldClose()) {
 			renderer.prepare();
 			
 			Vector2i dims = window.getWindowDims();
 			
+			if (input.forward) cam.increasePosition(0.0f, 0.01f);
+			if (input.backward) cam.increasePosition(0.0f, -0.01f);
+			if (input.left) cam.increasePosition(-0.01f, 0.0f);
+			if (input.right) cam.increasePosition(0.01f, 0.0f);
 			renderer.submit(ent);
 			renderer.submit(ent2);
 			renderer.drawBase(shader, matrix, cam, dims);
-			window.poll();
+			window.poll(input);
 		}
 		loader.cleanUp();
 		window.cleanUp();

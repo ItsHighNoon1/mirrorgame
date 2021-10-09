@@ -25,6 +25,9 @@ public class Window {
 		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE);
 		window = GLFW.glfwCreateWindow(width, height, name, 0, 0);
 		
+		// dont miss a key event
+		GLFW.glfwSetInputMode(window, GLFW.GLFW_STICKY_KEYS, GLFW.GLFW_TRUE);
+		
 		// set up the context
 		GLFW.glfwMakeContextCurrent(window);
 		GL.createCapabilities();
@@ -47,9 +50,13 @@ public class Window {
 		GLFW.glfwTerminate();
 	}
 	
-	public void poll() {
+	public void poll(Input i) {
 		GLFW.glfwSwapBuffers(window);
 		GLFW.glfwPollEvents();
+		i.forward = GLFW.glfwGetKey(window, i.keyForward) == GLFW.GLFW_PRESS;
+		i.backward = GLFW.glfwGetKey(window, i.keyBackward) == GLFW.GLFW_PRESS;
+		i.left = GLFW.glfwGetKey(window, i.keyLeft) == GLFW.GLFW_PRESS;
+		i.right = GLFW.glfwGetKey(window, i.keyRight) == GLFW.GLFW_PRESS;
 	}
 	
 	public boolean shouldClose() {

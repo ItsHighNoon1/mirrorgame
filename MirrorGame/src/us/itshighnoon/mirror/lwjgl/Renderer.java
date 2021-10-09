@@ -11,7 +11,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import us.itshighnoon.mirror.Camera;
 import us.itshighnoon.mirror.Entity;
 import us.itshighnoon.mirror.lwjgl.shader.Shader;
 import us.itshighnoon.mirror.lwjgl.shader.UniformMat4;
@@ -36,7 +35,7 @@ public class Renderer {
 		entities.get(model).add(0, e); // i love dsa !
 	}
 	
-	public void drawBase(Shader shader, UniformMat4 matrixUniform, Camera camera, Vector2i screenDims) {
+	public void drawBase(Shader shader, UniformMat4 matrixUniform, Entity camera, Vector2i screenDims) {
 		// vp matrix is not going to change so lets premultiply
 		Matrix4f vpMatrix = new Matrix4f();
 		Matrix4f mvpMatrix = new Matrix4f();

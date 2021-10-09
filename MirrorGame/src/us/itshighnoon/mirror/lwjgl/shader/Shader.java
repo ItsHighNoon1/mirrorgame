@@ -9,10 +9,10 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL43;
 
-public class ShaderProgram {
+public class Shader {
 	private int programId;
 	
-	public ShaderProgram(String vertexFile, String fragmentFile) {
+	public Shader(String vertexFile, String fragmentFile) {
 		int vShader = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
 		int fShader = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);
 		programId = GL20.glCreateProgram();
@@ -25,7 +25,7 @@ public class ShaderProgram {
 		GL20.glDeleteShader(fShader);
 	}
 	
-	public ShaderProgram(String computeFile) {
+	public Shader(String computeFile) {
 		int cShader = loadShader(computeFile, GL43.GL_COMPUTE_SHADER);
 		programId = GL20.glCreateProgram();
 		GL20.glAttachShader(programId, cShader);

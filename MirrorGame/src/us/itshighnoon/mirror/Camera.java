@@ -14,10 +14,7 @@ public class Camera {
 		this(0.0f, 0.0f);
 	}
 	
-	public Matrix4f getViewMatrix() {
-		Matrix4f viewMat = new Matrix4f();
-		viewMat = viewMat.translate(-position.x, -position.y, 0.0f);
-		// viewMat = viewMat.rotate(r, 0.0f, 0.0f, 1.0f);
-		return viewMat;
+	public Vector2f getPosition() {
+		return position;
 	}
 }

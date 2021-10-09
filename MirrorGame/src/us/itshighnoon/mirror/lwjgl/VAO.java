@@ -16,4 +16,11 @@ public class VAO {
 	public int getVertexCount() {
 		return vertexCount;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof VAO)) return false;
+		VAO vao = (VAO)o;
+		return vaoId == vao.getVaoId(); // same vao should have same vcount
+	}
 }

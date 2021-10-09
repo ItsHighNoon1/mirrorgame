@@ -10,4 +10,11 @@ public class Texture {
 	public int getTextureId() {
 		return textureId;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Texture)) return false;
+		Texture tex = (Texture)o;
+		return textureId == tex.getTextureId();
+	}
 }

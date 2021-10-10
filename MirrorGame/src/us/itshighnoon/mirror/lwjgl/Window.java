@@ -48,6 +48,12 @@ public class Window {
 		i.backward = GLFW.glfwGetKey(window, i.keyBackward) == GLFW.GLFW_PRESS;
 		i.left = GLFW.glfwGetKey(window, i.keyLeft) == GLFW.GLFW_PRESS;
 		i.right = GLFW.glfwGetKey(window, i.keyRight) == GLFW.GLFW_PRESS;
+		double[] mouseX = new double[1];
+		double[] mouseY = new double[1];
+		GLFW.glfwGetCursorPos(window, mouseX, mouseY);
+		Vector2i dims = getWindowDims();
+		i.mousePos.x = ((float)mouseX[0] / dims.x - 0.5f) * 2.0f;
+		i.mousePos.y = (0.5f - (float)mouseY[0] / dims.y) * 2.0f;
 	}
 	
 	public boolean shouldClose() {

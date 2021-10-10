@@ -41,6 +41,10 @@ public class Main {
 		
 		Input input = new Input();
 		
+		Mirror mirror1 = new Mirror(new Vector2f(0.0f, 0.0f), new Vector2f(0.0f, 5.0f));
+		Mirror mirror2 = new Mirror(new Vector2f(0.0f, 5.0f), new Vector2f(5.0f, 0.0f));
+		renderer.submitReflectors(mirror1, mirror2);
+		
 		while (!window.shouldClose()) {
 			displayBuffer.setSize(window.getWindowDims());
 			

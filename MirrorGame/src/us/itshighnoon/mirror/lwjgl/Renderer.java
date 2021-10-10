@@ -6,26 +6,30 @@ import java.util.List;
 import java.util.Map;
 
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import us.itshighnoon.mirror.Entity;
+import us.itshighnoon.mirror.Mirror;
 import us.itshighnoon.mirror.lwjgl.object.Framebuffer;
 import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
 import us.itshighnoon.mirror.lwjgl.shader.Shader;
 import us.itshighnoon.mirror.lwjgl.shader.UniformFloat;
 import us.itshighnoon.mirror.lwjgl.shader.UniformMat4;
 import us.itshighnoon.mirror.lwjgl.shader.UniformVec2;
+import us.itshighnoon.mirror.lwjgl.shader.UniformVec4Arr;
 
 public class Renderer {
 	private Shader base;
-	UniformMat4 base_mvpMatrix = new UniformMat4("u_mvpMatrix");
+	private UniformMat4 base_mvpMatrix = new UniformMat4("u_mvpMatrix");
 	
 	private Shader reflection;
-	UniformVec2 reflection_absPosition = new UniformVec2("u_absPosition");
-	UniformFloat reflection_aspect = new UniformFloat("u_aspect");
-	UniformFloat reflection_camSize = new UniformFloat("u_camSize");
+	private UniformVec4Arr reflection_mirrors = new UniformVec4Arr("u_mirrors");
+	private UniformVec2 reflection_absPosition = new UniformVec2("u_absPosition");
+	private UniformFloat reflection_aspect = new UniformFloat("u_aspect");
+	private UniformFloat reflection_camSize = new UniformFloat("u_camSize");
 	
 	private Map<TexturedModel, List<Entity>> entities;
 	
@@ -33,7 +37,7 @@ public class Renderer {
 		base = new Shader("res/v_base.glsl", "res/f_base.glsl");
 		base.storeAllUniformLocations(base_mvpMatrix);
 		reflection = new Shader("res/v_reflect.glsl", "res/f_reflect.glsl");
-		reflection.storeAllUniformLocations(reflection_absPosition, reflection_aspect, reflection_camSize);
+		reflection.storeAllUniformLocations(reflection_mirrors, reflection_absPosition, reflection_aspect, reflection_camSize);
 		entities = new LinkedHashMap<TexturedModel, List<Entity>>();
 		GL11.glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 	}
@@ -44,6 +48,16 @@ public class Renderer {
 			entities.put(model, new LinkedList<Entity>()); // we will be iterating
 		}
 		entities.get(model).add(0, e); // i love dsa !
+	}
+	
+	public void submitReflectors(Mirror... mirrors) {
+		Vector4f[] packedMirrors = new Vector4f[mirrors.length];
+		for (int i = 0; i < mirrors.length; i++) {
+			packedMirrors[i] = mirrors[i].getPacked();
+		}
+		reflection.start();
+		reflection_mirrors.loadVec4s(packedMirrors);
+		reflection.stop();
 	}
 	
 	public void drawBase(Entity camera, Framebuffer target) {

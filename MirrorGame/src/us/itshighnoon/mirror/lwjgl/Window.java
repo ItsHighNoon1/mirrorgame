@@ -4,6 +4,8 @@ import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 
+import us.itshighnoon.mirror.lwjgl.object.Framebuffer;
+
 public class Window {
 	private static final int OPENGL_MAJOR = 4;
 	private static final int OPENGL_MINOR = 6;
@@ -60,5 +62,9 @@ public class Window {
 		dims.x = w[0];
 		dims.y = h[0];
 		return dims;
+	}
+
+	public Framebuffer getFramebuffer() {
+		return new Framebuffer(0, 0, getWindowDims().x, getWindowDims().y);
 	}
 }

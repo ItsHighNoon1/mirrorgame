@@ -65,7 +65,7 @@ public class Loader {
 		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, colorBuffer, 0);
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 		
-		return new Framebuffer(fbo, colorBuffer);
+		return new Framebuffer(fbo, colorBuffer, width, height);
 	}
 	
 	public void cleanUp() {

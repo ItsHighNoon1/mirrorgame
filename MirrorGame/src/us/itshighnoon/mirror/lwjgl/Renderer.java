@@ -11,8 +11,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import us.itshighnoon.mirror.Entity;
-import us.itshighnoon.mirror.Mirror;
 import us.itshighnoon.mirror.lwjgl.object.Framebuffer;
 import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
 import us.itshighnoon.mirror.lwjgl.shader.Shader;
@@ -21,6 +19,8 @@ import us.itshighnoon.mirror.lwjgl.shader.UniformInt;
 import us.itshighnoon.mirror.lwjgl.shader.UniformMat4;
 import us.itshighnoon.mirror.lwjgl.shader.UniformVec2;
 import us.itshighnoon.mirror.lwjgl.shader.UniformVec4Arr;
+import us.itshighnoon.mirror.world.Entity;
+import us.itshighnoon.mirror.world.Wall;
 
 public class Renderer {
 	private Shader base;
@@ -28,10 +28,12 @@ public class Renderer {
 	
 	private Shader reflection;
 	private UniformVec4Arr reflection_mirrors = new UniformVec4Arr("u_mirrors");
+	private UniformVec4Arr reflection_walls = new UniformVec4Arr("u_walls");
 	private UniformVec2 reflection_absPosition = new UniformVec2("u_absPosition");
 	private UniformFloat reflection_aspect = new UniformFloat("u_aspect");
 	private UniformFloat reflection_camSize = new UniformFloat("u_camSize");
 	private UniformInt reflection_nMirrors = new UniformInt("u_nMirrors");
+	private UniformInt reflection_nWalls = new UniformInt("u_nWalls");
 	
 	private Map<TexturedModel, List<Entity>> entities;
 	
@@ -39,7 +41,7 @@ public class Renderer {
 		base = new Shader("res/shader/v_base.glsl", "res/shader/f_base.glsl");
 		base.storeAllUniformLocations(base_mvpMatrix);
 		reflection = new Shader("res/shader/v_reflect.glsl", "res/shader/f_reflect.glsl");
-		reflection.storeAllUniformLocations(reflection_mirrors, reflection_absPosition, reflection_aspect, reflection_camSize, reflection_nMirrors);
+		reflection.storeAllUniformLocations(reflection_mirrors, reflection_walls, reflection_absPosition, reflection_aspect, reflection_camSize, reflection_nMirrors, reflection_nWalls);
 		entities = new LinkedHashMap<TexturedModel, List<Entity>>();
 		GL11.glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 	}
@@ -52,7 +54,18 @@ public class Renderer {
 		entities.get(model).add(0, e); // i love dsa !
 	}
 	
-	public void submitReflectors(Mirror... mirrors) {
+	public void submitWalls(Wall... walls) {
+		Vector4f[] packedWalls = new Vector4f[walls.length];
+		for (int i = 0; i < walls.length; i++) {
+			packedWalls[i] = walls[i].getPacked();
+		}
+		reflection.start();
+		reflection_nWalls.loadInt(walls.length);
+		reflection_walls.loadVec4s(packedWalls);
+		reflection.stop();
+	}
+	
+	public void submitReflectors(Wall... mirrors) {
 		Vector4f[] packedMirrors = new Vector4f[mirrors.length];
 		for (int i = 0; i < mirrors.length; i++) {
 			packedMirrors[i] = mirrors[i].getPacked();
@@ -117,5 +130,10 @@ public class Renderer {
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
 		reflection.stop();
+	}
+	
+	public void cleanUp() {
+		base.cleanUp();
+		reflection.cleanUp();
 	}
 }

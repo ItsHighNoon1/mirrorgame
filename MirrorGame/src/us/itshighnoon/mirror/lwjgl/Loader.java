@@ -3,7 +3,9 @@ package us.itshighnoon.mirror.lwjgl;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -25,23 +27,32 @@ public class Loader {
 	private List<Integer> vbos;
 	private List<Integer> textures;
 	private List<Integer> fbos;
+	private Map<String, Texture> alreadyLoaded;
+	private VAO quadVao;
 	
 	public Loader() {
 		vaos = new ArrayList<Integer>();
 		vbos = new ArrayList<Integer>();
 		textures = new ArrayList<Integer>();
 		fbos = new ArrayList<Integer>();
+		alreadyLoaded = new HashMap<String, Texture>();
+		quadVao = null;
 	}
 	
 	public VAO loadQuad() {
+		if (quadVao != null) return quadVao;
 		int vao = createVao();
 		createVbo(0, 2, positions);
 		createVbo(1, 2, texCoords);
 		GL30.glBindVertexArray(0); // prevent someone else from modifying our vao
-		return new VAO(vao, positions.length / 2);
+		quadVao = new VAO(vao, positions.length / 2);
+		return quadVao;
 	}
 	
 	public Texture loadTexture(String path) {
+		if (alreadyLoaded.containsKey(path)) {
+			return alreadyLoaded.get(path);
+		}
 		STBImage.stbi_set_flip_vertically_on_load(true);
 		
 		// i love pointers!
@@ -54,7 +65,9 @@ public class Loader {
 		int texture = createTexture(w[0], h[0], imageData);
 		STBImage.stbi_image_free(imageData);
 		
-		return new Texture(texture);
+		Texture tex = new Texture(texture);
+		alreadyLoaded.put(path, tex);
+		return tex;
 	}
 	
 	public Framebuffer createFbo(int width, int height) {

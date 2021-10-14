@@ -1,4 +1,4 @@
-package us.itshighnoon.mirror;
+package us.itshighnoon.mirror.world;
 
 import org.joml.Vector2f;
 

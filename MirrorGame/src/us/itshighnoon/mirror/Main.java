@@ -1,8 +1,5 @@
 package us.itshighnoon.mirror;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.joml.Vector2f;
 
 import us.itshighnoon.mirror.lwjgl.Input;
@@ -12,6 +9,8 @@ import us.itshighnoon.mirror.lwjgl.Window;
 import us.itshighnoon.mirror.lwjgl.object.Framebuffer;
 import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
 import us.itshighnoon.mirror.lwjgl.object.VAO;
+import us.itshighnoon.mirror.world.Entity;
+import us.itshighnoon.mirror.world.Level;
 
 public class Main {
 	public static void main(String[] args) {
@@ -22,52 +21,51 @@ public class Main {
 		VAO vao = loader.loadQuad();
 		Framebuffer displayBuffer = window.getFramebuffer();
 		Framebuffer preRender = loader.createFbo(2048, 2048);
-		TexturedModel triangle = new TexturedModel(vao, loader.loadTexture("res/texture/triangle.png"));
-		TexturedModel square = new TexturedModel(vao, loader.loadTexture("res/texture/square.png"));
-		TexturedModel circle = new TexturedModel(vao, loader.loadTexture("res/texture/circle.png"));
-		TexturedModel fboView = new TexturedModel(vao, preRender);
 		
-		Entity floor = new Entity(new TexturedModel(vao, loader.loadTexture("res/texture/grass.png")), new Vector2f(2.5f, 2.5f), 0.0f, 5.0f);
+		Level level = new Level("res/level/test.txt", loader);
+		renderer.submitWalls(level.getWalls());
+		renderer.submitReflectors(level.getMirrors());
 		
+		Entity reflectedView = new Entity(new TexturedModel(vao, preRender), new Vector2f(0.0f, 0.0f), 0.0f, 2.0f);
+		Entity floor = new Entity(new TexturedModel(vao, loader.loadTexture("res/texture/grass.png")), new Vector2f(0.0f, 0.0f), 0.0f, 50.0f);
 		Entity cam = new Entity(null, new Vector2f(-1.0f, 1.0f), 0.0f, 5.0f);
-		Entity player = new Entity(circle);
+		Entity player = new Entity(new TexturedModel(vao, loader.loadTexture("res/texture/circle.png")));
 		player.setScale(0.5f);
-		
-		List<Entity> walls = new ArrayList<Entity>();
-		for (int i = 0; i < 50; i++) {
-			for (int j = 0; j <= i; j++) {
-				walls.add(new Entity(square, new Vector2f(i, j), 0.0f, 1.0f));
-			}
-		}
-		
-		Entity reflectedView = new Entity(fboView, new Vector2f(0.0f, 0.0f), 0.0f, 2.0f);
+		player.setPosition(level.getSpawn().x, level.getSpawn().y);
 		
 		Input input = new Input();
 		
-		Mirror mirror1 = new Mirror(new Vector2f(0.0f, 0.0f), new Vector2f(0.0f, 5.0f));
-		Mirror mirror2 = new Mirror(new Vector2f(0.0f, 5.0f), new Vector2f(5.0f, 0.0f));
-		renderer.submitReflectors(mirror1, mirror2);
-		
 		while (!window.shouldClose()) {
-			displayBuffer.setSize(window.getWindowDims());
-			renderer.submitBase(floor);
 			
-			if (input.forward) player.increasePosition(0.0f, 0.05f);
-			if (input.backward) player.increasePosition(0.0f, -0.05f);
-			if (input.left) player.increasePosition(-0.05f, 0.0f);
-			if (input.right) player.increasePosition(0.05f, 0.0f);
+			
+			Vector2f velocity = new Vector2f(0.0f);
+			if (input.forward) velocity.y += 0.05f;
+			if (input.backward) velocity.y -= 0.05f;
+			if (input.left) velocity.x -= 0.05f;
+			if (input.right) velocity.x += 0.05f;
+			player.increasePosition(velocity.x, velocity.y);
+			Physics.collide(player.getPosition(), player.getScale(), level.getColliders());
 			cam.setPosition(player.getPosition().x, player.getPosition().y);
-			renderer.submitBase(player);
 			
-			for (Entity e : walls) {
+			// Submit objects to renderer
+			for (Entity e : level.getFloors()) {
+				renderer.submitBase(e);
+			}
+			for (Entity e : level.getEnemies()) {
+				renderer.submitBase(e);
+			}
+			renderer.submitBase(player);
+			for (Entity e : level.getParticles()) {
 				renderer.submitBase(e);
 			}
 			
+			// Draw the scene
+			displayBuffer.setSize(window.getWindowDims());
 			renderer.drawBase(cam, preRender);
 			renderer.drawReflected(reflectedView, cam, displayBuffer);
-			
 			window.poll(input);
 		}
+		renderer.cleanUp();
 		loader.cleanUp();
 		window.cleanUp();
 	}

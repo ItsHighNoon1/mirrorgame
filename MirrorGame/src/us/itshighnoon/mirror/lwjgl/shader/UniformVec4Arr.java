@@ -9,7 +9,7 @@ public class UniformVec4Arr extends Uniform {
 	}
 	
 	public void loadVec4s(Vector4f[] vectors) {
-		if (vectors.length > 64) System.out.println("Warning: likely using >64 mirrors");
+		if (vectors.length > 64) System.out.println("Warning: current max is 64 mirrors, using " + vectors.length);
 		float[] data = new float[vectors.length * 4];
 		for (int i = 0; i < vectors.length; i++) {
 			data[4 * i] = vectors[i].x;

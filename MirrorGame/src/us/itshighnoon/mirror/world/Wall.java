@@ -1,13 +1,13 @@
-package us.itshighnoon.mirror;
+package us.itshighnoon.mirror.world;
 
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
-public class Mirror {
+public class Wall {
 	private Vector2f a;
 	private Vector2f b;
 	
-	public Mirror(Vector2f a, Vector2f b) {
+	public Wall(Vector2f a, Vector2f b) {
 		this.a = a;
 		this.b = b;
 	}
@@ -26,6 +26,6 @@ public class Mirror {
 	
 	public Vector4f getPacked() {
 		Vector2f vec = getVec();
-		return new Vector4f(a.x, a.y, vec.x, vec.y);
+		return new Vector4f(getA().x, getA().y, vec.x, vec.y);
 	}
 }

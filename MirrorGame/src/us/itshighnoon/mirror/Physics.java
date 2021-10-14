@@ -5,10 +5,10 @@ import org.joml.Vector2f;
 import us.itshighnoon.mirror.world.Wall;
 
 public class Physics {
-	public static void collide(Vector2f p, float size, Wall[] colliders) {
+	public static void collideCircle(Vector2f p, float size, Wall[] colliders) {
 		// Since we are passing diameters 99% of the time, divide by 2
+		size *= 0.5f;
 		
-		size /= 2.0f;
 		for (int i = 0; i < colliders.length; i++) {
 			// Check if the ball is within the bounds of the line
 			Vector2f a = colliders[i].getA();

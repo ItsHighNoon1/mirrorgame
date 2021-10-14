@@ -1,0 +1,32 @@
+package us.itshighnoon.mirror.world;
+
+import org.joml.Vector2f;
+
+import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
+
+public class Particle extends Entity {
+	private Vector2f velocity;
+	private float dampening;
+	private float timeLeft;
+	private boolean immortal;
+	
+	public Particle(TexturedModel model, Vector2f position, float rotation, float scale, float lt) {
+		super(model, position, rotation, scale);
+		immortal = lt < 0.0f;
+		timeLeft = lt;
+		velocity = new Vector2f(0.0f, 0.0f);
+	}
+	
+	public void setVelocity(Vector2f velocity, float dampening) {
+		this.velocity = velocity;
+		this.dampening = dampening;
+	}
+
+	public boolean tick(float dt) {
+		increasePosition(velocity.x * dt, velocity.y * dt);
+		velocity.x *= 1.0f - dampening * dt;
+		velocity.y *= 1.0f - dampening * dt;
+		timeLeft -= dt;
+		return immortal || timeLeft > 0.0f;
+	}
+}

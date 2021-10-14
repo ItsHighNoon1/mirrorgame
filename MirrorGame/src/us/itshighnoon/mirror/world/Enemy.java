@@ -9,5 +9,5 @@ public abstract class Enemy extends Entity {
 		super(model, position, rotation, scale);
 	}
 	
-	public abstract void tick(Entity player, Level world);
+	public abstract boolean tick(Entity player, Level world, float dt);
 }

@@ -18,7 +18,7 @@ public class Level {
 	private List<Wall> mirrors;
 	private List<Entity> floors;
 	private List<Enemy> enemies;
-	private List<Entity> particles;
+	private List<Particle> particles;
 	private Vector2f playerSpawn;
 	
 	public Level(String levelFile, Loader loader) {
@@ -80,7 +80,7 @@ public class Level {
 		mirrors = new ArrayList<Wall>();
 		floors = new ArrayList<Entity>();
 		enemies = new ArrayList<Enemy>();
-		particles = new ArrayList<Entity>();
+		particles = new ArrayList<Particle>();
 		playerSpawn = new Vector2f(0.0f, 0.0f);
 	}
 	
@@ -122,8 +122,12 @@ public class Level {
 		return enemies;
 	}
 	
-	public List<Entity> getParticles() {
+	public List<Particle> getParticles() {
 		return particles;
+	}
+	
+	public void addParticle(Particle p) {
+		particles.add(p);
 	}
 	
 	public Vector2f getSpawn() {

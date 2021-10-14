@@ -28,8 +28,9 @@ public class Window {
 		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE);
 		window = GLFW.glfwCreateWindow(width, height, name, 0, 0);
 		
-		// dont miss a key event
+		// dont miss a key/click event
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_STICKY_KEYS, GLFW.GLFW_TRUE);
+		GLFW.glfwSetInputMode(window, GLFW.GLFW_STICKY_MOUSE_BUTTONS, GLFW.GLFW_TRUE);
 		
 		// set up the context
 		GLFW.glfwMakeContextCurrent(window);
@@ -50,16 +51,18 @@ public class Window {
 	public void poll(Input i) {
 		GLFW.glfwSwapBuffers(window);
 		GLFW.glfwPollEvents();
-		i.forward = GLFW.glfwGetKey(window, i.keyForward) == GLFW.GLFW_PRESS;
-		i.backward = GLFW.glfwGetKey(window, i.keyBackward) == GLFW.GLFW_PRESS;
-		i.left = GLFW.glfwGetKey(window, i.keyLeft) == GLFW.GLFW_PRESS;
-		i.right = GLFW.glfwGetKey(window, i.keyRight) == GLFW.GLFW_PRESS;
+		i.forward = GLFW.glfwGetKey(window, i.keyForward) == GLFW.GLFW_PRESS ? 1.0f : 0.0f;
+		i.backward = GLFW.glfwGetKey(window, i.keyBackward) == GLFW.GLFW_PRESS ? 1.0f : 0.0f;
+		i.left = GLFW.glfwGetKey(window, i.keyLeft) == GLFW.GLFW_PRESS ? 1.0f : 0.0f;
+		i.right = GLFW.glfwGetKey(window, i.keyRight) == GLFW.GLFW_PRESS ? 1.0f : 0.0f;
 		double[] mouseX = new double[1];
 		double[] mouseY = new double[1];
 		GLFW.glfwGetCursorPos(window, mouseX, mouseY);
 		Vector2i dims = getWindowDims();
-		i.mousePos.x = ((float)mouseX[0] / dims.x - 0.5f) * 2.0f;
-		i.mousePos.y = (0.5f - (float)mouseY[0] / dims.y) * 2.0f;
+		i.aimLocation.x = ((float)mouseX[0] / dims.x - 0.5f) * 2.0f * dims.x / dims.y;
+		i.aimLocation.y = (0.5f - (float)mouseY[0] / dims.y) * 2.0f;
+		i.shoot = GLFW.glfwGetMouseButton(window, i.buttonShoot) == GLFW.GLFW_PRESS && !i.holdShoot;
+		i.holdShoot = GLFW.glfwGetMouseButton(window, i.buttonShoot) == GLFW.GLFW_PRESS;
 		
 		double currentTime = GLFW.glfwGetTime();
 		frameTime = (float)(currentTime - lastTime);

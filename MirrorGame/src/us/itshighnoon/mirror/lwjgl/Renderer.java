@@ -104,10 +104,10 @@ public class Renderer {
 				base_mvpMatrix.loadMatrix(mvpMatrix);
 				GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, model.getVao().getVertexCount());
 			}
-			modelEntities.clear();
 			GL20.glDisableVertexAttribArray(0);
 			GL20.glDisableVertexAttribArray(1);
 		}
+		entities.clear();
 		base.stop();
 	}
 	

@@ -8,13 +8,16 @@ public class Input {
 	public int keyBackward;
 	public int keyLeft;
 	public int keyRight;
+	public int buttonShoot;
 	
-	public boolean forward;
-	public boolean backward;
-	public boolean left;
-	public boolean right;
+	public float forward;
+	public float backward;
+	public float left;
+	public float right;
 	
-	public Vector2f mousePos;
+	public Vector2f aimLocation;
+	public boolean holdShoot;
+	public boolean shoot;
 	
 	public Input() {
 		keyForward = GLFW.GLFW_KEY_W;
@@ -22,7 +25,7 @@ public class Input {
 		keyLeft = GLFW.GLFW_KEY_A;
 		keyRight = GLFW.GLFW_KEY_D;
 		
-		mousePos = new Vector2f();
+		aimLocation = new Vector2f();
 	}
 	
 	public Input(String file) {

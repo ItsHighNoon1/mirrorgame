@@ -22,12 +22,15 @@ public class Main {
 		VAO vao = loader.loadQuad();
 		Framebuffer displayBuffer = window.getFramebuffer();
 		Framebuffer preRender = loader.createFbo(2048, 2048);
-		TexturedModel triangle = new TexturedModel(vao, loader.loadTexture("res/triangle.png"));
-		TexturedModel square = new TexturedModel(vao, loader.loadTexture("res/square.png"));
+		TexturedModel triangle = new TexturedModel(vao, loader.loadTexture("res/texture/triangle.png"));
+		TexturedModel square = new TexturedModel(vao, loader.loadTexture("res/texture/square.png"));
+		TexturedModel circle = new TexturedModel(vao, loader.loadTexture("res/texture/circle.png"));
 		TexturedModel fboView = new TexturedModel(vao, preRender);
 		
-		Entity cam = new Entity(null, new Vector2f(-1.0f, 1.0f), 0.0f, 3.0f);
-		Entity player = new Entity(triangle);
+		Entity floor = new Entity(new TexturedModel(vao, loader.loadTexture("res/texture/grass.png")), new Vector2f(2.5f, 2.5f), 0.0f, 5.0f);
+		
+		Entity cam = new Entity(null, new Vector2f(-1.0f, 1.0f), 0.0f, 5.0f);
+		Entity player = new Entity(circle);
 		player.setScale(0.5f);
 		
 		List<Entity> walls = new ArrayList<Entity>();
@@ -47,6 +50,7 @@ public class Main {
 		
 		while (!window.shouldClose()) {
 			displayBuffer.setSize(window.getWindowDims());
+			renderer.submitBase(floor);
 			
 			if (input.forward) player.increasePosition(0.0f, 0.05f);
 			if (input.backward) player.increasePosition(0.0f, -0.05f);

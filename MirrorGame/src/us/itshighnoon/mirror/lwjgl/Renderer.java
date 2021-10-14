@@ -17,6 +17,7 @@ import us.itshighnoon.mirror.lwjgl.object.Framebuffer;
 import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
 import us.itshighnoon.mirror.lwjgl.shader.Shader;
 import us.itshighnoon.mirror.lwjgl.shader.UniformFloat;
+import us.itshighnoon.mirror.lwjgl.shader.UniformInt;
 import us.itshighnoon.mirror.lwjgl.shader.UniformMat4;
 import us.itshighnoon.mirror.lwjgl.shader.UniformVec2;
 import us.itshighnoon.mirror.lwjgl.shader.UniformVec4Arr;
@@ -30,14 +31,15 @@ public class Renderer {
 	private UniformVec2 reflection_absPosition = new UniformVec2("u_absPosition");
 	private UniformFloat reflection_aspect = new UniformFloat("u_aspect");
 	private UniformFloat reflection_camSize = new UniformFloat("u_camSize");
+	private UniformInt reflection_nMirrors = new UniformInt("u_nMirrors");
 	
 	private Map<TexturedModel, List<Entity>> entities;
 	
 	public Renderer() {
-		base = new Shader("res/v_base.glsl", "res/f_base.glsl");
+		base = new Shader("res/shader/v_base.glsl", "res/shader/f_base.glsl");
 		base.storeAllUniformLocations(base_mvpMatrix);
-		reflection = new Shader("res/v_reflect.glsl", "res/f_reflect.glsl");
-		reflection.storeAllUniformLocations(reflection_mirrors, reflection_absPosition, reflection_aspect, reflection_camSize);
+		reflection = new Shader("res/shader/v_reflect.glsl", "res/shader/f_reflect.glsl");
+		reflection.storeAllUniformLocations(reflection_mirrors, reflection_absPosition, reflection_aspect, reflection_camSize, reflection_nMirrors);
 		entities = new LinkedHashMap<TexturedModel, List<Entity>>();
 		GL11.glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 	}
@@ -56,6 +58,7 @@ public class Renderer {
 			packedMirrors[i] = mirrors[i].getPacked();
 		}
 		reflection.start();
+		reflection_nMirrors.loadInt(mirrors.length);
 		reflection_mirrors.loadVec4s(packedMirrors);
 		reflection.stop();
 	}

@@ -27,7 +27,6 @@ public class Main {
 		renderer.submitReflectors(level.getMirrors());
 		
 		Entity reflectedView = new Entity(new TexturedModel(vao, preRender), new Vector2f(0.0f, 0.0f), 0.0f, 2.0f);
-		Entity floor = new Entity(new TexturedModel(vao, loader.loadTexture("res/texture/grass.png")), new Vector2f(0.0f, 0.0f), 0.0f, 50.0f);
 		Entity cam = new Entity(null, new Vector2f(-1.0f, 1.0f), 0.0f, 5.0f);
 		Entity player = new Entity(new TexturedModel(vao, loader.loadTexture("res/texture/circle.png")));
 		player.setScale(0.5f);
@@ -36,14 +35,12 @@ public class Main {
 		Input input = new Input();
 		
 		while (!window.shouldClose()) {
-			
-			
 			Vector2f velocity = new Vector2f(0.0f);
-			if (input.forward) velocity.y += 0.05f;
-			if (input.backward) velocity.y -= 0.05f;
-			if (input.left) velocity.x -= 0.05f;
-			if (input.right) velocity.x += 0.05f;
-			player.increasePosition(velocity.x, velocity.y);
+			if (input.forward) velocity.y += 3.0f;
+			if (input.backward) velocity.y -= 3.0f;
+			if (input.left) velocity.x -= 3.0f;
+			if (input.right) velocity.x += 3.0f;
+			player.increasePosition(velocity.x * window.getFrameTime(), velocity.y * window.getFrameTime());
 			Physics.collide(player.getPosition(), player.getScale(), level.getColliders());
 			cam.setPosition(player.getPosition().x, player.getPosition().y);
 			

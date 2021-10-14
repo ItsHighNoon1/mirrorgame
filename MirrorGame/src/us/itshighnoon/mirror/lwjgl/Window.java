@@ -9,8 +9,11 @@ import us.itshighnoon.mirror.lwjgl.object.Framebuffer;
 public class Window {
 	private static final int OPENGL_MAJOR = 4;
 	private static final int OPENGL_MINOR = 6;
+	private static final float MAX_FRAME_TIME = 0.1f;
 	
 	private long window;
+	private double lastTime;
+	private float frameTime;
 	
 	public Window(String name, int width, int height) {
 		// initialize glfw
@@ -31,6 +34,9 @@ public class Window {
 		// set up the context
 		GLFW.glfwMakeContextCurrent(window);
 		GL.createCapabilities();
+		
+		frameTime = 0.0f;
+		lastTime = GLFW.glfwGetTime();
 	}
 	
 	public Window() {
@@ -54,10 +60,18 @@ public class Window {
 		Vector2i dims = getWindowDims();
 		i.mousePos.x = ((float)mouseX[0] / dims.x - 0.5f) * 2.0f;
 		i.mousePos.y = (0.5f - (float)mouseY[0] / dims.y) * 2.0f;
+		
+		double currentTime = GLFW.glfwGetTime();
+		frameTime = (float)(currentTime - lastTime);
+		lastTime = currentTime;
 	}
 	
 	public boolean shouldClose() {
 		return GLFW.glfwWindowShouldClose(window);
+	}
+	
+	public float getFrameTime() {
+		return frameTime > MAX_FRAME_TIME ? MAX_FRAME_TIME : frameTime;
 	}
 	
 	public Vector2i getWindowDims() {

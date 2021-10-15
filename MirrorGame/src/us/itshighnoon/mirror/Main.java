@@ -5,6 +5,8 @@ import java.util.Random;
 
 import org.joml.Vector2f;
 
+import us.itshighnoon.mirror.audio.AudioEngine;
+import us.itshighnoon.mirror.audio.Sound;
 import us.itshighnoon.mirror.lwjgl.Input;
 import us.itshighnoon.mirror.lwjgl.Loader;
 import us.itshighnoon.mirror.lwjgl.Renderer;
@@ -23,6 +25,7 @@ public class Main {
 		Window window = new Window(); // window initializes the gl context so it has to go first
 		Loader loader = new Loader();
 		Renderer renderer = new Renderer();
+		AudioEngine audio = new AudioEngine();
 		
 		VAO vao = loader.loadQuad();
 		Framebuffer displayBuffer = window.getFramebuffer();
@@ -36,7 +39,10 @@ public class Main {
 		TexturedModel vaporTrail = new TexturedModel(vao, loader.loadTexture("res/texture/vapor_trail.png"));
 		TexturedModel muzzleFlash = new TexturedModel(vao, loader.loadTexture("res/texture/muzzle_flash.png"));
 		TexturedModel blood = new TexturedModel(vao, loader.loadTexture("res/texture/blood.png"));
-		TexturedModel smoke = new TexturedModel(vao, loader.loadTexture("res/texture/smoke.png"));
+		
+		Sound shootSound = audio.loadSound("res/sound/shoot.wav", -15.0f, 10);
+		Sound music = audio.loadMusic("res/sound/music.wav", -10.0f, 176003);
+		audio.playSound(music);
 		
 		Entity reflectedView = new Entity(new TexturedModel(vao, preRender), new Vector2f(0.0f, 0.0f), 0.0f, 2.0f);
 		Entity cam = new Entity(null, new Vector2f(-1.0f, 1.0f), 0.0f, 5.0f);
@@ -68,6 +74,8 @@ public class Main {
 			
 			// Shoot the gun
 			if (input.shoot) {
+				audio.playSound(shootSound);
+				
 				Vector2f shotDirection = new Vector2f(input.aimLocation.x - gun.getPosition().x, input.aimLocation.y - gun.getPosition().y);
 				shotDirection.normalize(0.1f);
 				Vector2f currentLocation = new Vector2f(gun.getPosition().x, gun.getPosition().y);
@@ -76,10 +84,14 @@ public class Main {
 				Particle flash = new Particle(muzzleFlash, new Vector2f(currentLocation.x + shotDirection.x * 2.5f, currentLocation.y + shotDirection.y * 2.5f), gun.getRotation(), 0.5f, 0.05f);
 				boolean hit = false;
 				for (int i = 0; i < 100; i++) {
+					// Draw vapor trail
 					Particle trail = new Particle(vaporTrail, new Vector2f(currentLocation.x, currentLocation.y), gun.getRotation(), 0.1f, 0.2f);
 					trail.setVelocity(new Vector2f(i * 0.005f * rand.nextFloat(), i * 0.005f * rand.nextFloat()), 1.0f);
 					level.addParticle(trail);
 					currentLocation.add(shotDirection);
+					if (hit) break;
+					
+					// Check if we shot an enemy
 					for (Enemy e : level.getEnemies()) {
 						float dxEnemy = e.getPosition().x - currentLocation.x;
 						float dyEnemy = e.getPosition().y - currentLocation.y;
@@ -91,18 +103,14 @@ public class Main {
 								Particle bloodParticle = new Particle(blood, bloodPos, gun.getRotation(), 1.0f, -1.0f);
 								bloodParticle.setVelocity(shotDirection.mul(10.0f), 10.0f);
 								level.addParticle(bloodParticle);
+								break;
 							}
 						}
 					}
+					
+					// Check if we shot a wall
 					float distToWall = Physics.distToLine(currentLocation, level.getColliders());
-					if (distToWall < 0.1f) {
-						hit = true;
-						Vector2f smokePos = new Vector2f(currentLocation.x, currentLocation.y);
-						Particle smokeParticle = new Particle(smoke, smokePos, rand.nextFloat() * 6.0f, 0.1f, 0.2f);
-						smokeParticle.setAngularVelocity(5.0f, 10.0f);
-						level.addParticle(smokeParticle);
-					}
-					if (hit) break;
+					if (distToWall < 0.1f) hit = true;
 				}
 				level.addParticle(flash);
 			}
@@ -140,5 +148,8 @@ public class Main {
 		renderer.cleanUp();
 		loader.cleanUp();
 		window.cleanUp();
+		
+		// Delete clips that havent killed themselves
+		audio.cleanUp();
 	}
 }

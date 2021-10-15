@@ -34,7 +34,7 @@ public class Particle extends Entity {
 		increaseRotation(angVelocity * dt);
 		velocity.x *= 1.0f - dampening * dt;
 		velocity.y *= 1.0f - dampening * dt;
-		angVelocity *= 1.0f - angVelocity * dt;
+		angVelocity *= 1.0f - angDampening * dt;
 		timeLeft -= dt;
 		return immortal || timeLeft > 0.0f;
 	}

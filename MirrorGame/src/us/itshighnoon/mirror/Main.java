@@ -12,10 +12,10 @@ import us.itshighnoon.mirror.lwjgl.Window;
 import us.itshighnoon.mirror.lwjgl.object.Framebuffer;
 import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
 import us.itshighnoon.mirror.lwjgl.object.VAO;
-import us.itshighnoon.mirror.world.Enemy;
 import us.itshighnoon.mirror.world.Entity;
 import us.itshighnoon.mirror.world.Level;
 import us.itshighnoon.mirror.world.Particle;
+import us.itshighnoon.mirror.world.enemy.Enemy;
 
 public class Main {
 	public static void main(String[] args) {
@@ -32,8 +32,11 @@ public class Main {
 		renderer.submitWalls(level.getWalls());
 		renderer.submitReflectors(level.getMirrors());
 		
+		// These will be used a lot and we can save memory by allocating them once instead of per entity
 		TexturedModel vaporTrail = new TexturedModel(vao, loader.loadTexture("res/texture/vapor_trail.png"));
 		TexturedModel muzzleFlash = new TexturedModel(vao, loader.loadTexture("res/texture/muzzle_flash.png"));
+		TexturedModel blood = new TexturedModel(vao, loader.loadTexture("res/texture/blood.png"));
+		TexturedModel smoke = new TexturedModel(vao, loader.loadTexture("res/texture/smoke.png"));
 		
 		Entity reflectedView = new Entity(new TexturedModel(vao, preRender), new Vector2f(0.0f, 0.0f), 0.0f, 2.0f);
 		Entity cam = new Entity(null, new Vector2f(-1.0f, 1.0f), 0.0f, 5.0f);
@@ -71,16 +74,40 @@ public class Main {
 				currentLocation.x += shotDirection.x * 2.5f;
 				currentLocation.y += shotDirection.y * 2.5f;
 				Particle flash = new Particle(muzzleFlash, new Vector2f(currentLocation.x + shotDirection.x * 2.5f, currentLocation.y + shotDirection.y * 2.5f), gun.getRotation(), 0.5f, 0.05f);
+				boolean hit = false;
 				for (int i = 0; i < 100; i++) {
 					Particle trail = new Particle(vaporTrail, new Vector2f(currentLocation.x, currentLocation.y), gun.getRotation(), 0.1f, 0.2f);
 					trail.setVelocity(new Vector2f(i * 0.005f * rand.nextFloat(), i * 0.005f * rand.nextFloat()), 1.0f);
 					level.addParticle(trail);
 					currentLocation.add(shotDirection);
+					for (Enemy e : level.getEnemies()) {
+						float dxEnemy = e.getPosition().x - currentLocation.x;
+						float dyEnemy = e.getPosition().y - currentLocation.y;
+						float enemyRadius2 = e.getScale() * e.getScale() * 0.25f;
+						if (dxEnemy * dxEnemy + dyEnemy * dyEnemy < enemyRadius2) {
+							if (e.shoot()) {
+								hit = true;
+								Vector2f bloodPos = new Vector2f(currentLocation.x + shotDirection.x * 5.0f, currentLocation.y + shotDirection.y * 5.0f);
+								Particle bloodParticle = new Particle(blood, bloodPos, gun.getRotation(), 1.0f, -1.0f);
+								bloodParticle.setVelocity(shotDirection.mul(10.0f), 10.0f);
+								level.addParticle(bloodParticle);
+							}
+						}
+					}
+					float distToWall = Physics.distToLine(currentLocation, level.getColliders());
+					if (distToWall < 0.1f) {
+						hit = true;
+						Vector2f smokePos = new Vector2f(currentLocation.x, currentLocation.y);
+						Particle smokeParticle = new Particle(smoke, smokePos, rand.nextFloat() * 6.0f, 0.1f, 0.2f);
+						smokeParticle.setAngularVelocity(5.0f, 10.0f);
+						level.addParticle(smokeParticle);
+					}
+					if (hit) break;
 				}
 				level.addParticle(flash);
 			}
 			
-			// Submit objects to renderer and tick particles
+			// Submit objects to renderer and tick enemies + particles
 			for (Entity f : level.getFloors()) {
 				renderer.submitBase(f);
 			}
@@ -93,7 +120,8 @@ public class Main {
 			}
 			for (Iterator<Enemy> it = level.getEnemies().iterator(); it.hasNext();) {
 				Enemy e = it.next();
-				if(!e.tick(player, level, window.getFrameTime())) {
+				e.tick(player, level, window.getFrameTime());
+				if(e.getHp() <= 0) {
 					it.remove();
 				}
 				renderer.submitBase(e);
@@ -107,6 +135,8 @@ public class Main {
 			renderer.drawReflected(reflectedView, cam, displayBuffer);
 			window.poll(input);
 		}
+		
+		// Delete OpenGL objects. Society if Java had destructors
 		renderer.cleanUp();
 		loader.cleanUp();
 		window.cleanUp();

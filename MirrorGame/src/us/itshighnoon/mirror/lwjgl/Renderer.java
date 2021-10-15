@@ -43,7 +43,7 @@ public class Renderer {
 		reflection = new Shader("res/shader/v_reflect.glsl", "res/shader/f_reflect.glsl");
 		reflection.storeAllUniformLocations(reflection_mirrors, reflection_walls, reflection_absPosition, reflection_aspect, reflection_camSize, reflection_nMirrors, reflection_nWalls);
 		entities = new LinkedHashMap<TexturedModel, List<Entity>>();
-		GL11.glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+		GL11.glClearColor(0.0f, 0.05f, 0.05f, 1.0f);
 	}
 	
 	public void submitBase(Entity e) {

@@ -58,4 +58,40 @@ public class Physics {
 			}
 		}
 	}
+	
+	public static float distToLine(Vector2f p, Wall[] colliders) {
+		float nearest = 999.9f;
+		
+		for (int i = 0; i < colliders.length; i++) {
+			Vector2f a = colliders[i].getA();
+			Vector2f b = colliders[i].getB();
+			Vector2f ab = new Vector2f(b.x - a.x, b.y - a.y);
+			Vector2f ba = new Vector2f(a.x - b.x, a.y - b.y);
+			Vector2f ap = new Vector2f(p.x - a.x, p.y - a.y);
+			Vector2f bp = new Vector2f(p.x - b.x, p.y - b.y);
+			if (ab.dot(ap) > 0.0f && ba.dot(bp) > 0.0f) {
+				Vector2f n = new Vector2f(ab.y, -ab.x);
+				n.normalize();
+				float depth = ap.dot(n);
+				if (depth < 0.0f) {
+					depth = -depth;
+				}
+				if (depth < nearest) {
+					nearest = depth;
+				}
+			}
+			
+			float dx1 = p.x - colliders[i].getA().x;
+			float dy1 = p.y - colliders[i].getA().y;
+			float dx2 = p.x - colliders[i].getB().x;
+			float dy2 = p.y - colliders[i].getB().y;
+			
+			float aDist = (float)Math.sqrt(dx1 * dx1 + dy1 * dy1);
+			float bDist = (float)Math.sqrt(dx2 * dx2 + dy2 * dy2);
+			if (aDist < nearest) nearest = aDist;
+			if (bDist < nearest) nearest = bDist;
+		}
+		
+		return nearest;
+	}
 }

@@ -12,6 +12,8 @@ import org.joml.Vector2f;
 
 import us.itshighnoon.mirror.lwjgl.Loader;
 import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
+import us.itshighnoon.mirror.world.enemy.Enemy;
+import us.itshighnoon.mirror.world.enemy.Triangle;
 
 public class Level {
 	private List<Wall> walls;
@@ -56,15 +58,25 @@ public class Level {
 					break;
 				case "f":
 					// Floor
-					Vector2f pos = new Vector2f(Float.parseFloat(lineData[2]), Float.parseFloat(lineData[3]));
+					Vector2f floorPos = new Vector2f(Float.parseFloat(lineData[2]), Float.parseFloat(lineData[3]));
 					float rot = 0.0f;
 					float scale = 1.0f;
 					if (lineData.length > 4) {
 						rot = Float.parseFloat(lineData[4]);
 						scale = Float.parseFloat(lineData[5]);
 					}
-					Entity floorTile = new Entity(textures.get(lineData[1]), pos, rot, scale);
+					Entity floorTile = new Entity(textures.get(lineData[1]), floorPos, rot, scale);
 					floors.add(floorTile);
+					break;
+				case "e":
+					// Enemy
+					Vector2f enemyPos = new Vector2f(Float.parseFloat(lineData[2]), Float.parseFloat(lineData[3]));
+					Enemy enemy;
+					switch (lineData[1]) {
+					default:
+						enemy = new Triangle(new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/triangle.png")), enemyPos, 0.0f, Float.parseFloat(lineData[4]));
+					}
+					enemies.add(enemy);
 					break;
 				}
 			}

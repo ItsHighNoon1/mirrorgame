@@ -82,6 +82,7 @@ public class Level {
 			}
 			reader.close();
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.err.println("Could not read file: " + levelFile);
 			System.exit(1);
 		}
@@ -105,6 +106,10 @@ public class Level {
 		return wallsArr;
 	}
 	
+	public void addWall(Wall w) {
+		walls.add(w);
+	}
+	
 	public Wall[] getMirrors() {
 		Wall[] mirrorsArr = new Wall[mirrors.size()];
 		int i = 0;
@@ -112,6 +117,10 @@ public class Level {
 			mirrorsArr[i++] = w;
 		}
 		return mirrorsArr;
+	}
+	
+	public void addMirror(Wall m) {
+		mirrors.add(m);
 	}
 	
 	public Wall[] getColliders() {
@@ -130,8 +139,16 @@ public class Level {
 		return floors;
 	}
 	
+	public void addFloor(Entity f) {
+		floors.add(f);
+	}
+	
 	public List<Enemy> getEnemies() {
 		return enemies;
+	}
+	
+	public void addEnemy(Enemy e) {
+		enemies.add(e);
 	}
 	
 	public List<Particle> getParticles() {

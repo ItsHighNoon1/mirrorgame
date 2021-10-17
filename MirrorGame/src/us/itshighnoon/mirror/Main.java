@@ -7,6 +7,7 @@ import org.joml.Vector2f;
 
 import us.itshighnoon.mirror.audio.AudioEngine;
 import us.itshighnoon.mirror.audio.Sound;
+import us.itshighnoon.mirror.editor.Editor;
 import us.itshighnoon.mirror.lwjgl.Input;
 import us.itshighnoon.mirror.lwjgl.Loader;
 import us.itshighnoon.mirror.lwjgl.Renderer;
@@ -21,6 +22,11 @@ import us.itshighnoon.mirror.world.enemy.Enemy;
 
 public class Main {
 	public static void main(String[] args) {
+		if (args.length > 0 && "e".equals(args[0])) {
+			new Editor();
+			return;
+		}
+		
 		Random rand = new Random();
 		Window window = new Window(); // window initializes the gl context so it has to go first
 		Loader loader = new Loader();

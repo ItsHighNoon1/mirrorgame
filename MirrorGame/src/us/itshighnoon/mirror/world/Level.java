@@ -2,7 +2,10 @@ package us.itshighnoon.mirror.world;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +14,7 @@ import java.util.Map;
 import org.joml.Vector2f;
 
 import us.itshighnoon.mirror.lwjgl.Loader;
+import us.itshighnoon.mirror.lwjgl.object.Texture;
 import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
 import us.itshighnoon.mirror.world.enemy.Enemy;
 import us.itshighnoon.mirror.world.enemy.Triangle;
@@ -95,6 +99,42 @@ public class Level {
 		enemies = new ArrayList<Enemy>();
 		particles = new ArrayList<Particle>();
 		playerSpawn = new Vector2f(0.0f, 0.0f);
+	}
+	
+	public void save(String file, Map<Texture, String> textureFiles) {
+		try {
+			FileOutputStream fos = new FileOutputStream(file);
+			PrintWriter out = new PrintWriter(fos);
+			
+			out.println("s " + playerSpawn.x + " " + playerSpawn.y);
+			
+			List<Texture> textures = new ArrayList<Texture>();
+			for (int i = 0; i < floors.size(); i++) {
+				if (!textures.contains(floors.get(i).getModel().getTexture())) {
+					textures.add(floors.get(i).getModel().getTexture());
+				}
+			}
+			for (int i = 0; i < textures.size(); i++) {
+				out.println(String.format("ft %d %s", i, textureFiles.get(textures.get(i))));
+			}
+			for (int i = 0; i < floors.size(); i++) {
+				out.println(String.format("f %d %f %f", textures.indexOf(floors.get(i).getModel().getTexture()), floors.get(i).getPosition().x, floors.get(i).getPosition().y));
+			}
+			for (int i = 0; i < walls.size(); i++) {
+				out.println(String.format("w %f %f %f %f", walls.get(i).getA().x, walls.get(i).getA().y, walls.get(i).getB().x, walls.get(i).getB().y));
+			}
+			for (int i = 0; i < mirrors.size(); i++) {
+				out.println(String.format("m %f %f %f %f", mirrors.get(i).getA().x, mirrors.get(i).getA().y, mirrors.get(i).getB().x, mirrors.get(i).getB().y));
+			}
+			for (int i = 0; i < enemies.size(); i++) {
+				out.println(String.format("e %s %f %f %f", enemies.get(i).getName(), enemies.get(i).getPosition().x, enemies.get(i).getPosition().y, enemies.get(i).getScale()));
+			}
+			
+			out.close();
+		} catch (FileNotFoundException e) {
+			System.err.println("Could not write file " + file);
+			e.printStackTrace();
+		}
 	}
 	
 	public Wall[] getWalls() {

@@ -11,8 +11,8 @@ import java.awt.event.MouseListener;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextPane;
 
 import org.joml.Vector2f;
 
@@ -22,7 +22,7 @@ import us.itshighnoon.mirror.world.Wall;
 public class Editor {
 	private JFrame frame;
 	private Viewport vp;
-	private JTextPane levelData;
+	private JLabel levelData;
 	private JButton loadLevel;
 	private JButton saveLevel;
 	
@@ -35,6 +35,7 @@ public class Editor {
 		frame.setLayout(new GridBagLayout());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
+		frame.setLocation(100, 100);
 		ButtonHandler buttonListener = new ButtonHandler();
 		GridBagConstraints gbc = new GridBagConstraints();
 		
@@ -42,9 +43,8 @@ public class Editor {
 		vp = new Viewport(loader);
 		vp.addMouseListener(new MouseHandler());
 		
-		levelData = new JTextPane();
-		levelData.setEditable(false);
-		levelData.setText("No level loaded");
+		levelData = new JLabel();
+		levelData.setText("No level loaded.");
 		levelData.setPreferredSize(new Dimension(vp.getPreferredSize().width, levelData.getPreferredSize().height));
 		
 		loadLevel = new JButton();
@@ -69,6 +69,8 @@ public class Editor {
 		
 		frame.pack();
 		frame.setVisible(true);
+		
+		setDataText();
 	}
 	
 	private class MouseHandler implements MouseListener {
@@ -79,9 +81,11 @@ public class Editor {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			currentLevel.addMirror(new Wall(new Vector2f(0.0f, 0.0f), vp.getLocation(e.getX(), e.getY())));
-			vp.repaint();
-			setDataText();
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				currentLevel.addMirror(new Wall(new Vector2f(0.0f, 0.0f), vp.getLocation(e.getX(), e.getY())));
+				vp.repaint();
+				setDataText();
+			}
 		}
 
 		@Override
@@ -101,9 +105,8 @@ public class Editor {
 	}
 	
 	private void setDataText() {
-		// TODO text not updating
-		if (currentLevel != null) {
-			levelData.setText("No level loaded");
+		if (currentLevel == null) {
+			levelData.setText("No level loaded.");
 			return;
 		}
 		levelData.setText("Walls: " + currentLevel.getWalls().length + " | Mirrors: " + currentLevel.getMirrors().length);
@@ -117,8 +120,9 @@ public class Editor {
 					JFileChooser fileChooser = new JFileChooser();
 					int res = fileChooser.showOpenDialog(frame);
 					if (res == JFileChooser.APPROVE_OPTION) {
-						currentLevel = LevelIO.loadLevel(fileChooser.getSelectedFile(), loader);
+						currentLevel = new Level(fileChooser.getSelectedFile().getAbsolutePath(), loader);
 						vp.setLevel(currentLevel);
+						setDataText();
 					} else {
 						throw new IllegalArgumentException("No file selected.");
 					}
@@ -130,7 +134,7 @@ public class Editor {
 					JFileChooser fileChooser = new JFileChooser();
 					int res = fileChooser.showSaveDialog(frame);
 					if (res == JFileChooser.APPROVE_OPTION) {
-						LevelIO.saveLevel(fileChooser.getSelectedFile());
+						currentLevel.save(fileChooser.getSelectedFile().getAbsolutePath(), loader.flip());
 						JOptionPane.showMessageDialog(frame, "Level saved.");
 					} else {
 						throw new IllegalArgumentException("No file selected.");

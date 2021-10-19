@@ -24,4 +24,6 @@ public abstract class Enemy extends Entity {
 	}
 	
 	public abstract void tick(Entity player, Level world, float dt);
+	
+	public abstract String getName();
 }

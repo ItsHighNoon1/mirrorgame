@@ -49,4 +49,12 @@ public class EditorLoader extends Loader {
 	public Image getImage(int id) {
 		return imageData.get(id);
 	}
+	
+	public Map<Texture, String> flip() {
+		Map<Texture, String> flipped = new HashMap<Texture, String>();
+		for (String s : alreadyLoaded.keySet()) {
+			flipped.put(alreadyLoaded.get(s), s);
+		}
+		return flipped;
+	}
 }

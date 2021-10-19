@@ -23,4 +23,9 @@ public class Triangle extends Enemy {
 			Physics.collideCircle(getPosition(), getScale(), world.getColliders());
 		}
 	}
+
+	@Override
+	public String getName() {
+		return "triangle";
+	}
 }

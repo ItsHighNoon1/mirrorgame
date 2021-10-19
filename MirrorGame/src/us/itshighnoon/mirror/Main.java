@@ -115,7 +115,7 @@ public class Main {
 					}
 					
 					// Check if we shot a wall
-					float distToWall = Physics.distToLine(currentLocation, level.getColliders());
+					float distToWall = Physics.nearestLine(currentLocation, level.getColliders());
 					if (distToWall < 0.1f) hit = true;
 				}
 				level.addParticle(flash);

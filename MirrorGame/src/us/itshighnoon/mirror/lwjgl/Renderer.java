@@ -97,6 +97,10 @@ public class Renderer {
 	public void drawBase(Entity camera, Framebuffer target) {
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, target.getFramebufferId());
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		drawOver(camera, target);
+	}
+	
+	public void drawOver(Entity camera, Framebuffer target) {
 		GL11.glViewport(0, 0, target.getSize().x, target.getSize().y);
 		
 		// vp matrix is not going to change so lets premultiply

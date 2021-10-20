@@ -3,8 +3,8 @@ package us.itshighnoon.mirror.world.enemy;
 import org.joml.Vector2f;
 
 import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
-import us.itshighnoon.mirror.world.Entity;
 import us.itshighnoon.mirror.world.Level;
+import us.itshighnoon.mirror.world.Player;
 
 public class Octagon extends Enemy {
 	public Octagon(TexturedModel model, Vector2f position, float rotation, float scale) {
@@ -12,7 +12,7 @@ public class Octagon extends Enemy {
 	}
 
 	@Override
-	public void tick(Entity player, Level world, float dt) {
+	public void tick(Player player, Level world, float dt) {
 		
 	}
 

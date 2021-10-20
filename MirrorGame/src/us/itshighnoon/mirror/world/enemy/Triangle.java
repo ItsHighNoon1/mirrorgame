@@ -4,8 +4,8 @@ import org.joml.Vector2f;
 
 import us.itshighnoon.mirror.Physics;
 import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
-import us.itshighnoon.mirror.world.Entity;
 import us.itshighnoon.mirror.world.Level;
+import us.itshighnoon.mirror.world.Player;
 
 public class Triangle extends Enemy {
 	public Triangle(TexturedModel model, Vector2f position, float rotation, float scale) {
@@ -13,7 +13,7 @@ public class Triangle extends Enemy {
 	}
 
 	@Override
-	public void tick(Entity player, Level world, float dt) {
+	public void tick(Player player, Level world, float dt) {
 		Vector2f toPlayer = new Vector2f(player.getPosition().x - getPosition().x, player.getPosition().y - getPosition().y);
 		float dist = toPlayer.length();
 		if (dist < 5.0f) {

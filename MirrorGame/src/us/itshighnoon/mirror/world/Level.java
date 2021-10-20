@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.joml.Vector2f;
 
+import us.itshighnoon.mirror.Main;
 import us.itshighnoon.mirror.lwjgl.Loader;
 import us.itshighnoon.mirror.lwjgl.object.Texture;
 import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
@@ -30,6 +31,8 @@ public class Level {
 	private List<Enemy> enemies;
 	private List<Particle> particles;
 	private Vector2f playerSpawn;
+	private Vector2f exit;
+	private String nextLevel;
 	
 	public Level(String levelFile, Loader loader) {
 		this();
@@ -82,25 +85,34 @@ public class Level {
 					Enemy enemy = null;
 					switch (lineData[1]) {
 					case "triangle":
-						enemy = new Triangle(new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/triangle.png")), enemyPos, 0.0f, Float.parseFloat(lineData[4]));
+						enemy = new Triangle(Main.triangle, enemyPos, 0.0f, Float.parseFloat(lineData[4]));
 						break;
 					case "square":
-						enemy = new Square(new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/square.png")), enemyPos, 0.0f, Float.parseFloat(lineData[4]));
+						enemy = new Square(Main.square, enemyPos, 0.0f, Float.parseFloat(lineData[4]));
 						break;
 					case "pentagon":
-						enemy = new Pentagon(new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/pentagon.png")), enemyPos, 0.0f, Float.parseFloat(lineData[4]));
+						enemy = new Pentagon(Main.pentagon, enemyPos, 0.0f, Float.parseFloat(lineData[4]));
 						break;
 					case "hexagon":
-						enemy = new Hexagon(new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/hexagon.png")), enemyPos, 0.0f, Float.parseFloat(lineData[4]));
+						enemy = new Hexagon(Main.hexagon, enemyPos, 0.0f, Float.parseFloat(lineData[4]));
 						break;
 					case "octagon":
-						enemy = new Octagon(new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/octagon.png")), enemyPos, 0.0f, Float.parseFloat(lineData[4]));
+						enemy = new Octagon(Main.octagon, enemyPos, 0.0f, Float.parseFloat(lineData[4]));
 						break;
 					}
 					if (enemy != null) {
 						enemies.add(enemy);
 					}
 					break;
+				case "ex":
+					// Exit
+					exit.x = Float.parseFloat(lineData[1]);
+					exit.y = Float.parseFloat(lineData[2]);
+					if (lineData.length > 3) {
+						nextLevel = lineData[3];
+					} else {
+						nextLevel = null;
+					}
 				}
 			}
 			reader.close();
@@ -118,6 +130,7 @@ public class Level {
 		enemies = new ArrayList<Enemy>();
 		particles = new ArrayList<Particle>();
 		playerSpawn = new Vector2f(0.0f, 0.0f);
+		exit = new Vector2f(0.0f, 0.0f);
 	}
 	
 	public void save(String file, Map<Texture, String> textureFiles) {
@@ -230,5 +243,21 @@ public class Level {
 	
 	public void setSpawn(Vector2f spawn) {
 		playerSpawn = spawn;
+	}
+	
+	public Vector2f getExit() {
+		return exit;
+	}
+	
+	public void setExit(Vector2f exit) {
+		this.exit = exit;
+	}
+	
+	public String getNextLevel() {
+		return nextLevel;
+	}
+	
+	public void setNextLevel(String next) {
+		nextLevel = next;
 	}
 }

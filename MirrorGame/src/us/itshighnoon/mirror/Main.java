@@ -18,16 +18,32 @@ import us.itshighnoon.mirror.lwjgl.object.VAO;
 import us.itshighnoon.mirror.world.Entity;
 import us.itshighnoon.mirror.world.Level;
 import us.itshighnoon.mirror.world.Particle;
+import us.itshighnoon.mirror.world.Player;
 import us.itshighnoon.mirror.world.enemy.Enemy;
 
 public class Main {
+	// These will be used a lot and we can save memory by allocating them once instead of per entity
+	public static TexturedModel triangle;
+	public static TexturedModel square;
+	public static TexturedModel pentagon;
+	public static TexturedModel hexagon;
+	public static TexturedModel octagon;
+	public static TexturedModel vaporTrail;
+	public static TexturedModel muzzleFlash;
+	public static TexturedModel blood;
+	public static TexturedModel bulletCasing;
+	public static TexturedModel smoke;
+	public static TexturedModel heart;
+	public static Sound shootSound;
+	public static Random rand;
+	
 	public static void main(String[] args) {
 		if (args.length > 0 && "e".equals(args[0])) {
 			new Editor();
 			return;
 		}
 		
-		Random rand = new Random();
+		rand = new Random();
 		Window window = new Window(); // window initializes the gl context so it has to go first
 		Loader loader = new Loader();
 		Renderer renderer = new Renderer();
@@ -37,23 +53,39 @@ public class Main {
 		Framebuffer displayBuffer = window.getFramebuffer();
 		Framebuffer preRender = loader.createFbo(2048, 2048);
 		
-		Level level = new Level("res/level/new.txt", loader);
+		triangle = new TexturedModel(vao, loader.loadTexture("res/texture/triangle.png"));
+		square = new TexturedModel(vao, loader.loadTexture("res/texture/square.png"));
+		pentagon = new TexturedModel(vao, loader.loadTexture("res/texture/pentagon.png"));
+		hexagon = new TexturedModel(vao, loader.loadTexture("res/texture/hexagon.png"));
+		octagon = new TexturedModel(vao, loader.loadTexture("res/texture/octagon.png"));
+		vaporTrail = new TexturedModel(vao, loader.loadTexture("res/texture/vapor_trail.png"));
+		muzzleFlash = new TexturedModel(vao, loader.loadTexture("res/texture/muzzle_flash.png"));
+		blood = new TexturedModel(vao, loader.loadTexture("res/texture/blood.png"));
+		bulletCasing = new TexturedModel(vao, loader.loadTexture("res/texture/bullet_case.png"));
+		smoke = new TexturedModel(vao, loader.loadTexture("res/texture/smoke.png"));
+		heart = new TexturedModel(vao, loader.loadTexture("res/texture/heart.png"));
+		
+		String levelFile = "res/level/test.txt";
+		Level level = new Level(levelFile, loader);
 		renderer.submitWalls(level.getWalls());
 		renderer.submitReflectors(level.getMirrors());
 		
-		// These will be used a lot and we can save memory by allocating them once instead of per entity
-		TexturedModel vaporTrail = new TexturedModel(vao, loader.loadTexture("res/texture/vapor_trail.png"));
-		TexturedModel muzzleFlash = new TexturedModel(vao, loader.loadTexture("res/texture/muzzle_flash.png"));
-		TexturedModel blood = new TexturedModel(vao, loader.loadTexture("res/texture/blood.png"));
-		
-		Sound shootSound = audio.loadSound("res/sound/shoot.wav", -15.0f, 10);
-		Sound music = audio.loadMusic("res/sound/music.wav", -10.0f, 176003);
+		shootSound = audio.loadSound("res/sound/shoot.wav", -20.0f, 100);
+		Sound music = audio.loadMusic("res/sound/music.wav", -10.0f, 86736);
 		audio.playSound(music);
 		
 		Entity reflectedView = new Entity(new TexturedModel(vao, preRender), new Vector2f(0.0f, 0.0f), 0.0f, 2.0f);
 		Entity cam = new Entity(null, new Vector2f(-1.0f, 1.0f), 0.0f, 5.0f);
-		Entity player = new Entity(new TexturedModel(vao, loader.loadTexture("res/texture/circle.png")), new Vector2f(level.getSpawn().x, level.getSpawn().y), 0.0f, 0.5f);
+		Player player = new Player(new TexturedModel(vao, loader.loadTexture("res/texture/circle.png")), new Vector2f(level.getSpawn().x, level.getSpawn().y), 0.0f, 0.5f);
 		Entity gun = new Entity(new TexturedModel(vao, loader.loadTexture("res/texture/block_td.png")), new Vector2f(0.0f, 0.0f), 0.0f, 0.5f);
+		Entity[] hearts = new Entity[player.getHp()];
+		for (int i = 0; i < hearts.length; i++) {
+			hearts[i] = new Entity(heart, new Vector2f(-0.5f + 0.5f * i, 4.5f), 0.0f, 0.45f);
+		}
+		Entity[] bullets = new Entity[player.getAmmo()];
+		for (int i = 0; i < bullets.length; i++) {
+			bullets[i] = new Entity(bulletCasing, new Vector2f(-3.0f + 0.15f * i, -4.5f), -1.571f, 0.15f);
+		}
 		
 		Input input = new Input();
 		
@@ -65,7 +97,25 @@ public class Main {
 			velocity.x -= 3.0f * input.left;
 			velocity.x += 3.0f * input.right;
 			player.increasePosition(velocity.x * window.getFrameTime(), velocity.y * window.getFrameTime());
+			player.tick(window.getFrameTime());
+			if (player.getHp() <= 0) {
+				level = new Level(levelFile, loader);
+				player.setHp(3);
+				player.setAmmo(40);
+				player.setPosition(level.getSpawn().x, level.getSpawn().y);
+			}
 			Physics.collideCircle(player.getPosition(), player.getScale(), level.getColliders());
+			
+			// If the player is in the exit area, load the next level
+			float exitDistanceX = player.getPosition().x - level.getExit().x;
+			float exitDistanceY = player.getPosition().y - level.getExit().y;
+			if (exitDistanceX * exitDistanceX + exitDistanceY * exitDistanceY < 1.0f && level.getNextLevel() != null) {
+				levelFile = level.getNextLevel();
+				level = new Level(levelFile, loader);
+				player.setHp(3);
+				player.setAmmo(40);
+				player.setPosition(level.getSpawn().x, level.getSpawn().y);
+			}
 			
 			// Figure out where the player is aiming
 			Vector2f aimDirection = new Vector2f(input.aimLocation.x, input.aimLocation.y);
@@ -79,8 +129,13 @@ public class Main {
 			gun.setRotation((float)Math.atan2(input.aimLocation.y - gun.getPosition().y, input.aimLocation.x - gun.getPosition().x));
 			
 			// Shoot the gun
-			if (input.shoot) {
+			if (input.shoot && player.getAmmo() > 0) {
 				audio.playSound(shootSound);
+				player.increaseAmmo(-1);
+				Particle bulletCase = new Particle(bulletCasing, new Vector2f(player.getPosition().x + aimDirection.y * 0.25f, player.getPosition().y - aimDirection.x * 0.25f), rand.nextFloat() * 6.28f, 0.1f, 1.0f);
+				bulletCase.setVelocity(new Vector2f(aimDirection.y * (rand.nextFloat() + 1.0f) * 5.0f, -aimDirection.x * (rand.nextFloat() + 1.0f) * 5.0f), 10.0f);
+				bulletCase.setAngularVelocity((rand.nextFloat() - 0.5f) * 10.0f, 10.0f);
+				level.addParticle(bulletCase);
 				
 				Vector2f shotDirection = new Vector2f(input.aimLocation.x - gun.getPosition().x, input.aimLocation.y - gun.getPosition().y);
 				shotDirection.normalize(0.1f);
@@ -147,6 +202,16 @@ public class Main {
 			displayBuffer.setSize(window.getWindowDims());
 			renderer.drawBase(cam, preRender);
 			renderer.drawReflected(reflectedView, cam, displayBuffer);
+			
+			// Draw gui
+			cam.setPosition(0.0f, 0.0f);
+			for (int i = 0; i < hearts.length && i < player.getHp(); i++) {
+				renderer.submitBase(hearts[i]);
+			}
+			for (int i = 0; i < bullets.length && i < player.getAmmo(); i++) {
+				renderer.submitBase(bullets[i]);
+			}
+			renderer.drawOver(cam, displayBuffer);
 			window.poll(input);
 		}
 		

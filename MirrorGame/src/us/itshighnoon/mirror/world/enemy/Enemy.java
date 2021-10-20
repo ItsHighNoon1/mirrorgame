@@ -5,6 +5,7 @@ import org.joml.Vector2f;
 import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
 import us.itshighnoon.mirror.world.Entity;
 import us.itshighnoon.mirror.world.Level;
+import us.itshighnoon.mirror.world.Player;
 
 public abstract class Enemy extends Entity {
 	protected int hp;
@@ -23,7 +24,7 @@ public abstract class Enemy extends Entity {
 		return true;
 	}
 	
-	public abstract void tick(Entity player, Level world, float dt);
+	public abstract void tick(Player player, Level world, float dt);
 	
 	public abstract String getName();
 }

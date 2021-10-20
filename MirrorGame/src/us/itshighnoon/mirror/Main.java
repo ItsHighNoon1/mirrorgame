@@ -41,6 +41,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		if (args.length > 0 && "e".equals(args[0])) {
+			// The thinking is that I can run the editor on my Mac which doesn't have OpenGL
 			new Editor();
 			return;
 		}
@@ -68,13 +69,15 @@ public class Main {
 		heart = new TexturedModel(vao, loader.loadTexture("res/texture/heart.png"));
 		bullet = new TexturedModel(vao, loader.loadTexture("res/texture/bullet.png"));
 		
-		String levelFile = "res/level/test.txt";
+		String levelFile = "res/level/level1.txt";
 		Level level = new Level(levelFile, loader);
 		renderer.submitWalls(level.getWalls());
 		renderer.submitReflectors(level.getMirrors());
 		
 		shootSound = audio.loadSound("res/sound/shoot.wav", -20.0f, 100);
-		audio.playMusic(level.getMusic());
+		if (level.getMusic() != null) {
+			audio.playMusic(level.getMusic());
+		}
 		
 		Entity reflectedView = new Entity(new TexturedModel(vao, preRender), new Vector2f(0.0f, 0.0f), 0.0f, 2.0f);
 		Entity cam = new Entity(null, new Vector2f(-1.0f, 1.0f), 0.0f, 5.0f);
@@ -114,7 +117,9 @@ public class Main {
 			if (exitDistanceX * exitDistanceX + exitDistanceY * exitDistanceY < 1.0f && level.getNextLevel() != null) {
 				levelFile = level.getNextLevel();
 				level = new Level(levelFile, loader);
-				audio.playMusic(level.getMusic());
+				if (level.getMusic() != null) {
+					audio.playMusic(level.getMusic());
+				}
 				player.setHp(3);
 				player.setAmmo(40);
 				player.setPosition(level.getSpawn().x, level.getSpawn().y);

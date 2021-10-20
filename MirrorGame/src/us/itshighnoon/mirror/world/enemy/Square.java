@@ -27,7 +27,7 @@ public class Square extends Enemy {
 			runningTime = FLEE_TIME;
 		}
 		runningTime -= dt;
-		if (runningTime < 0.0f && dist < 5.0) {
+		if (runningTime < 0.0f && isVisible(player, world)) {
 			increasePosition(toPlayer.x * dt * 2.0f, toPlayer.y * dt * 2.0f);
 		} else if (runningTime > 0.0f) {
 			increasePosition(-toPlayer.x * dt * 2.0f, -toPlayer.y * dt * 2.0f);

@@ -51,7 +51,7 @@ public class Pentagon extends Enemy {
 		} else {
 			Vector2f toPlayer = new Vector2f(player.getPosition().x - getPosition().x, player.getPosition().y - getPosition().y);
 			float dist = toPlayer.length();
-			if (dist < 5.0f) {
+			if (isVisible(player, world)) {
 				shootTimer -= dt;
 				if (shootTimer < 0.0f) {
 					shootTimer = 5.0f;

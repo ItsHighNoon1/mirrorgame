@@ -28,9 +28,8 @@ public class Triangle extends Enemy {
 	@Override
 	public void tick(Player player, Level world, float dt) {
 		Vector2f toPlayer = new Vector2f(player.getPosition().x - getPosition().x, player.getPosition().y - getPosition().y);
-		float dist = toPlayer.length();
-		if (dist < 5.0f) {
-			toPlayer.div(dist);
+		toPlayer.normalize();
+		if (isVisible(player, world)) {
 			setRotation((float)Math.atan2(toPlayer.y, toPlayer.x));
 			increasePosition(toPlayer.x * dt, toPlayer.y * dt);
 			Physics.collideCircle(getPosition(), getScale(), world.getColliders());

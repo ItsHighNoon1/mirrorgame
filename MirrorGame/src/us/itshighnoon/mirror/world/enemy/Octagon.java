@@ -48,7 +48,7 @@ public class Octagon extends Enemy {
 			player.increaseHp(-1);
 			hp = 0;
 		}
-		if (dist < 5.0) {
+		if (isVisible(player, world)) {
 			increasePosition(toPlayer.x * dt / getScale(), toPlayer.y * dt / getScale());
 		}
 		Physics.collideCircle(getPosition(), getScale(), world.getColliders());

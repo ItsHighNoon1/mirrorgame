@@ -22,8 +22,7 @@ public class Hexagon extends Enemy {
 	@Override
 	public void tick(Player player, Level world, float dt) {
 		Vector2f toPlayer = new Vector2f(player.getPosition().x - getPosition().x, player.getPosition().y - getPosition().y);
-		float dist = toPlayer.length();
-		if (dist < 5.0f) {
+		if (isVisible(player, world)) {
 			shootTimer -= dt;
 			if (shootTimer < 0.0f) {
 				increaseRotation(10.0f * dt);
@@ -54,11 +53,11 @@ public class Hexagon extends Enemy {
 					}
 					world.addParticle(flash);
 				}
-				if (shootTimer < -2.0f) {
+				if (shootTimer < -1.0f) {
 					shootTimer = 3.0f;
 				}
 			} else {
-				setRotation((float)Math.atan2(toPlayer.y, toPlayer.x));
+				setRotation((float)Math.atan2(-toPlayer.y, -toPlayer.x));
 			}
 		} else {
 			shootTimer = 2.0f;

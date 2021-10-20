@@ -15,6 +15,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class AudioEngine {
 	private Map<Sound, List<Clip>> clipPool;
+	private Sound music;
 	
 	public AudioEngine() {
 		clipPool = new HashMap<Sound, List<Clip>>();
@@ -50,6 +51,47 @@ public class AudioEngine {
 		for (Clip c : clips) {
 			if (!c.isRunning()) {
 				c.setFramePosition(0);
+				c.start();
+				return;
+			}
+		}
+		try {
+			// There was no available clip, make a new one
+			Clip clip;
+			clip = AudioSystem.getClip();
+			clip.open(AudioSystem.getAudioInputStream(new File(sound.getSource())));
+			FloatControl gainControl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
+			gainControl.setValue(sound.getVolume());
+			if (sound.getLoopPoint() > 0) {
+				clip.loop(Clip.LOOP_CONTINUOUSLY);
+				clip.setLoopPoints((int)sound.getLoopPoint(), -1);
+			}
+			clip.start();
+			clips.add(clip);
+		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void playMusic(Sound sound) {
+		int cutPosition = 0;
+		
+		if (music != null) {
+			List<Clip> clips = clipPool.get(music);
+			for (Clip c : clips) {
+				if (c.isRunning()) {
+					cutPosition = c.getFramePosition();
+					c.stop();
+				}
+			}
+		}
+		
+		music = sound;
+		
+		List<Clip> clips = clipPool.get(music);
+		for (Clip c : clips) {
+			if (!c.isRunning()) {
+				c.setFramePosition(cutPosition);
 				c.start();
 				return;
 			}

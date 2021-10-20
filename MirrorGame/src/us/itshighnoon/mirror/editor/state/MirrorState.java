@@ -9,21 +9,22 @@ import us.itshighnoon.mirror.world.Level;
 import us.itshighnoon.mirror.world.Wall;
 
 public class MirrorState implements EditorState {
-	private Vector2f start;
+	private Wall current;
 	private boolean deleting;
 	
 	@Override
 	public void pressLeft(Level level, Vector2f pos) {
 		pos.x = pos.x - pos.x % 0.5f;
 		pos.y = pos.y - pos.y % 0.5f;
-		start = pos;
+		current = new Wall(pos, pos);
+		level.addMirror(current);
 	}
 
 	@Override
 	public void releaseLeft(Level level, Vector2f pos) {
 		pos.x = pos.x - pos.x % 0.5f;
 		pos.y = pos.y - pos.y % 0.5f;
-		level.addMirror(new Wall(start, pos));
+		current.setB(pos);
 	}
 
 	@Override
@@ -45,6 +46,10 @@ public class MirrorState implements EditorState {
 					it.remove();
 				}
 			}
+		} else if (current != null) {
+			pos.x = pos.x - pos.x % 0.5f;
+			pos.y = pos.y - pos.y % 0.5f;
+			current.setB(pos);
 		}
 	}
 }

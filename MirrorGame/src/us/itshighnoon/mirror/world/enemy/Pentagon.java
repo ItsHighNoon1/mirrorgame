@@ -66,6 +66,9 @@ public class Pentagon extends Enemy {
 						player.increaseHp(-1);
 						projectile.tick(999.9f);
 						projectile = null;
+					} else if (Physics.nearestLine(projectile.getPosition(), world.getColliders()) < 0.2f) {
+						projectile.tick(999.9f);
+						projectile = null;
 					} else {
 						projToPlayer.div(projDist);
 						projToPlayer.add(projectile.getVelocity());

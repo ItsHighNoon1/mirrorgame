@@ -14,6 +14,7 @@ import java.util.Map;
 import org.joml.Vector2f;
 
 import us.itshighnoon.mirror.Main;
+import us.itshighnoon.mirror.audio.Sound;
 import us.itshighnoon.mirror.lwjgl.Loader;
 import us.itshighnoon.mirror.lwjgl.object.Texture;
 import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
@@ -33,6 +34,7 @@ public class Level {
 	private Vector2f playerSpawn;
 	private Vector2f exit;
 	private String nextLevel;
+	private Sound music;
 	
 	public Level(String levelFile, Loader loader) {
 		this();
@@ -113,6 +115,10 @@ public class Level {
 					} else {
 						nextLevel = null;
 					}
+					break;
+				case "mu":
+					// Music
+					music = Main.audio.loadMusic(lineData[1], -10.0f, Long.parseLong(lineData[2]));
 				}
 			}
 			reader.close();
@@ -259,5 +265,9 @@ public class Level {
 	
 	public void setNextLevel(String next) {
 		nextLevel = next;
+	}
+	
+	public Sound getMusic() {
+		return music;
 	}
 }

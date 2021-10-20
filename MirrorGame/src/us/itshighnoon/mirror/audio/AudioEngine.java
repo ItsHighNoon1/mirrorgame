@@ -91,8 +91,8 @@ public class AudioEngine {
 		List<Clip> clips = clipPool.get(music);
 		for (Clip c : clips) {
 			if (!c.isRunning()) {
-				c.setFramePosition(cutPosition);
 				c.start();
+				c.setFramePosition(cutPosition);
 				return;
 			}
 		}
@@ -107,8 +107,8 @@ public class AudioEngine {
 				clip.loop(Clip.LOOP_CONTINUOUSLY);
 				clip.setLoopPoints((int)sound.getLoopPoint(), -1);
 			}
-			clip.setFramePosition(cutPosition);
 			clip.start();
+			clip.setFramePosition(cutPosition);
 			clips.add(clip);
 		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
 			e.printStackTrace();

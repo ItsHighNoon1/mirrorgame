@@ -19,7 +19,7 @@ public abstract class Enemy extends Entity {
 		return hp;
 	}
 	
-	public boolean shoot() {
+	public boolean shoot(Level world) {
 		hp--;
 		return true;
 	}

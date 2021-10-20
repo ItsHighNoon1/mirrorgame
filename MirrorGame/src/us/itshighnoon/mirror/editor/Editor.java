@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import us.itshighnoon.mirror.Main;
 import us.itshighnoon.mirror.editor.state.EditorState;
 import us.itshighnoon.mirror.editor.state.EnemyState;
 import us.itshighnoon.mirror.editor.state.FloorState;
@@ -64,6 +65,12 @@ public class Editor {
 		vp = new Viewport(loader);
 		vp.addMouseListener(new MouseHandler());
 		vp.addMouseMotionListener(new MouseDragHandler());
+		
+		Main.triangle = new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/triangle.png"));
+		Main.square = new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/square.png"));
+		Main.pentagon = new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/pentagon.png"));
+		Main.hexagon = new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/hexagon.png"));
+		Main.octagon = new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/octagon.png"));
 		
 		levelData = new JLabel();
 		levelData.setText("No level loaded.");

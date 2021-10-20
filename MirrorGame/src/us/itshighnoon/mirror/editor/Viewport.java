@@ -74,10 +74,14 @@ public class Viewport extends JPanel {
 				int scale = (int)(16 * e.getScale());
 				g.drawImage(loader.getImage(e.getModel().getTexture().getTextureId()), ex, -ey, scale, scale, null);
 			}
-			g.setColor(Color.GREEN);
+			g.setColor(Color.RED);
 			int sx = (int)((level.getSpawn().x - camera.x) * CAM_WIDTH) - 4;
 			int sy = (int)((level.getSpawn().y - camera.y) * CAM_WIDTH) + 4;
 			g.fillOval(sx, -sy, 8, 8);
+			g.setColor(Color.GREEN);
+			int ex = (int)((level.getExit().x - camera.x) * CAM_WIDTH) - 4;
+			int ey = (int)((level.getExit().y - camera.y) * CAM_WIDTH) + 4;
+			g.fillOval(ex, -ey, 8, 8);
 		}
 	}
 	

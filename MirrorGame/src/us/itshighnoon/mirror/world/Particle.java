@@ -19,6 +19,10 @@ public class Particle extends Entity {
 		velocity = new Vector2f(0.0f, 0.0f);
 	}
 	
+	public Vector2f getVelocity() {
+		return velocity;
+	}
+	
 	public void setVelocity(Vector2f velocity, float dampening) {
 		this.velocity = velocity;
 		this.dampening = dampening;

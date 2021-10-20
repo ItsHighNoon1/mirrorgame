@@ -63,7 +63,10 @@ public class Physics {
 		float nearest = 999.9f;
 		
 		for (int i = 0; i < colliders.length; i++) {
-			distToLine(p, colliders[i]);
+			float dist = distToLine(p, colliders[i]);
+			if (dist < nearest) {
+				nearest = dist;
+			}
 		}
 		
 		return nearest;

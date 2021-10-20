@@ -10,6 +10,8 @@ import us.itshighnoon.mirror.world.Particle;
 import us.itshighnoon.mirror.world.Player;
 
 public class Pentagon extends Enemy {
+	private Particle projectile;
+	private float shootTimer = 1.0f;
 	private int dodges;
 	private boolean shouldDodge;
 	
@@ -19,12 +21,15 @@ public class Pentagon extends Enemy {
 	}
 	
 	@Override
-	public boolean shoot() {
+	public boolean shoot(Level world) {
 		if (dodges > 0) {
 			shouldDodge = true;
 			return false;
 		} else {
-			return super.shoot();
+			if (projectile != null) {
+				projectile.tick(999.9f);
+			}
+			return super.shoot(world);
 		}
 	}
 
@@ -47,6 +52,27 @@ public class Pentagon extends Enemy {
 			Vector2f toPlayer = new Vector2f(player.getPosition().x - getPosition().x, player.getPosition().y - getPosition().y);
 			float dist = toPlayer.length();
 			if (dist < 5.0f) {
+				shootTimer -= dt;
+				if (shootTimer < 0.0f) {
+					shootTimer = 5.0f;
+					projectile = new Particle(Main.pentagon, new Vector2f(getPosition().x, getPosition().y), getRotation(), 0.1f, 3.0f);
+					projectile.setAngularVelocity(10.0f, 0.0f);
+					world.addParticle(projectile);
+				}
+				if (projectile != null && projectile.tick(0.0f)) {
+					Vector2f projToPlayer = new Vector2f(player.getPosition().x - projectile.getPosition().x, player.getPosition().y - projectile.getPosition().y);
+					float projDist = projToPlayer.length();
+					if (projDist < 0.25f) {
+						player.increaseHp(-1);
+						projectile.tick(999.9f);
+						projectile = null;
+					} else {
+						projToPlayer.div(projDist);
+						projToPlayer.add(projectile.getVelocity());
+						projectile.setVelocity(projToPlayer.mul(0.7f), 0.0f);
+					}
+				}
+				
 				toPlayer.div(dist);
 				setRotation((float)Math.atan2(toPlayer.y, toPlayer.x));
 				if (dist > 3.0f) {

@@ -42,7 +42,7 @@ public class EnemyState implements EditorState {
 			level.addEnemy(new Hexagon(currentTexture, pos, 0.0f, 0.5f));
 			break;
 		case "octagon":
-			level.addEnemy(new Octagon(currentTexture, pos, 0.0f, 0.5f));
+			level.addEnemy(new Octagon(currentTexture, pos, 0.0f, 1.0f));
 			break;
 		}
 	}

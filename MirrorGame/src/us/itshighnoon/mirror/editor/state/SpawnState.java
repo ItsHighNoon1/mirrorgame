@@ -16,7 +16,11 @@ public class SpawnState implements EditorState {
 	public void releaseLeft(Level level, Vector2f pos) {}
 
 	@Override
-	public void pressRight(Level level, Vector2f pos) {}
+	public void pressRight(Level level, Vector2f pos) {
+		pos.x = pos.x - pos.x % 0.5f;
+		pos.y = pos.y - pos.y % 0.5f;
+		level.setExit(pos);
+	}
 
 	@Override
 	public void releaseRight(Level level, Vector2f pos) {}

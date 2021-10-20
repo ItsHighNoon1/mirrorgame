@@ -34,8 +34,10 @@ public class Main {
 	public static TexturedModel bulletCasing;
 	public static TexturedModel smoke;
 	public static TexturedModel heart;
+	public static TexturedModel bullet;
 	public static Sound shootSound;
 	public static Random rand;
+	public static AudioEngine audio;
 	
 	public static void main(String[] args) {
 		if (args.length > 0 && "e".equals(args[0])) {
@@ -43,11 +45,11 @@ public class Main {
 			return;
 		}
 		
-		rand = new Random();
 		Window window = new Window(); // window initializes the gl context so it has to go first
 		Loader loader = new Loader();
 		Renderer renderer = new Renderer();
-		AudioEngine audio = new AudioEngine();
+		rand = new Random();
+		audio = new AudioEngine();
 		
 		VAO vao = loader.loadQuad();
 		Framebuffer displayBuffer = window.getFramebuffer();
@@ -64,8 +66,9 @@ public class Main {
 		bulletCasing = new TexturedModel(vao, loader.loadTexture("res/texture/bullet_case.png"));
 		smoke = new TexturedModel(vao, loader.loadTexture("res/texture/smoke.png"));
 		heart = new TexturedModel(vao, loader.loadTexture("res/texture/heart.png"));
+		bullet = new TexturedModel(vao, loader.loadTexture("res/texture/bullet.png"));
 		
-		String levelFile = "res/level/test.txt";
+		String levelFile = "res/level/new.txt";
 		Level level = new Level(levelFile, loader);
 		renderer.submitWalls(level.getWalls());
 		renderer.submitReflectors(level.getMirrors());
@@ -158,7 +161,7 @@ public class Main {
 						float dyEnemy = e.getPosition().y - currentLocation.y;
 						float enemyRadius2 = e.getScale() * e.getScale() * 0.25f;
 						if (dxEnemy * dxEnemy + dyEnemy * dyEnemy < enemyRadius2) {
-							if (e.shoot()) {
+							if (e.shoot(level)) {
 								hit = true;
 								Vector2f bloodPos = new Vector2f(currentLocation.x + shotDirection.x * 5.0f, currentLocation.y + shotDirection.y * 5.0f);
 								Particle bloodParticle = new Particle(blood, bloodPos, gun.getRotation(), 1.0f, -1.0f);

@@ -115,6 +115,7 @@ public class Level {
 					} else {
 						nextLevel = null;
 					}
+					addParticle(new Particle(Main.exitSign, exit, 0.0f, 1.0f, -1.0f));
 					break;
 				case "mu":
 					// Music
@@ -144,7 +145,11 @@ public class Level {
 			FileOutputStream fos = new FileOutputStream(file);
 			PrintWriter out = new PrintWriter(fos);
 			
-			out.println("s " + playerSpawn.x + " " + playerSpawn.y);
+			out.println(String.format("s %f %f", playerSpawn.x, playerSpawn.y));
+			out.println(String.format("ex %f %f", exit.x, exit.y));
+			if (music != null) {
+				out.println(String.format("mu %s %d", music.getSource(), music.getLoopPoint()));
+			}
 			
 			List<Texture> textures = new ArrayList<Texture>();
 			for (int i = 0; i < floors.size(); i++) {

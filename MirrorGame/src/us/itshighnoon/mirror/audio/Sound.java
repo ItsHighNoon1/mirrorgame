@@ -17,8 +17,12 @@ public class Sound {
 		this.loopPoint = loopPoint;
 	}
 	
-	protected String getSource() {
+	public String getSource() {
 		return file;
+	}
+	
+	public long getLoopPoint() {
+		return loopPoint;
 	}
 	
 	protected float getVolume() {
@@ -27,9 +31,5 @@ public class Sound {
 	
 	protected float getPitch() {
 		return pitch;
-	}
-	
-	protected long getLoopPoint() {
-		return loopPoint;
 	}
 }

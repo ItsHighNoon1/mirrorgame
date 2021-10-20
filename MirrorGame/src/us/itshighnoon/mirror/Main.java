@@ -35,11 +35,13 @@ public class Main {
 	public static TexturedModel smoke;
 	public static TexturedModel heart;
 	public static TexturedModel bullet;
+	public static TexturedModel exitSign;
 	public static Sound shootSound;
 	public static Random rand;
 	public static AudioEngine audio;
 	
 	public static void main(String[] args) {
+		audio = new AudioEngine();
 		if (args.length > 0 && "e".equals(args[0])) {
 			// The thinking is that I can run the editor on my Mac which doesn't have OpenGL
 			new Editor();
@@ -50,7 +52,6 @@ public class Main {
 		Loader loader = new Loader();
 		Renderer renderer = new Renderer();
 		rand = new Random();
-		audio = new AudioEngine();
 		
 		VAO vao = loader.loadQuad();
 		Framebuffer displayBuffer = window.getFramebuffer();
@@ -68,8 +69,9 @@ public class Main {
 		smoke = new TexturedModel(vao, loader.loadTexture("res/texture/smoke.png"));
 		heart = new TexturedModel(vao, loader.loadTexture("res/texture/heart.png"));
 		bullet = new TexturedModel(vao, loader.loadTexture("res/texture/bullet.png"));
+		exitSign = new TexturedModel(vao, loader.loadTexture("res/texture/exit.png"));
 		
-		String levelFile = "res/level/level1.txt";
+		String levelFile = "res/level/industry.txt";
 		Level level = new Level(levelFile, loader);
 		renderer.submitWalls(level.getWalls());
 		renderer.submitReflectors(level.getMirrors());
@@ -97,10 +99,10 @@ public class Main {
 		while (!window.shouldClose()) {
 			// Tick the player
 			Vector2f velocity = new Vector2f(0.0f);
-			velocity.y += 3.0f * input.forward;
-			velocity.y -= 3.0f * input.backward;
-			velocity.x -= 3.0f * input.left;
-			velocity.x += 3.0f * input.right;
+			velocity.y += 2.3f * input.forward;
+			velocity.y -= 2.3f * input.backward;
+			velocity.x -= 2.3f * input.left;
+			velocity.x += 2.3f * input.right;
 			player.increasePosition(velocity.x * window.getFrameTime(), velocity.y * window.getFrameTime());
 			player.tick(window.getFrameTime());
 			if (player.getHp() <= 0) {
@@ -114,9 +116,11 @@ public class Main {
 			// If the player is in the exit area, load the next level
 			float exitDistanceX = player.getPosition().x - level.getExit().x;
 			float exitDistanceY = player.getPosition().y - level.getExit().y;
-			if (exitDistanceX * exitDistanceX + exitDistanceY * exitDistanceY < 1.0f && level.getNextLevel() != null) {
+			if (exitDistanceX * exitDistanceX + exitDistanceY * exitDistanceY < 0.25f && level.getNextLevel() != null) {
 				levelFile = level.getNextLevel();
 				level = new Level(levelFile, loader);
+				renderer.submitWalls(level.getWalls());
+				renderer.submitReflectors(level.getMirrors());
 				if (level.getMusic() != null) {
 					audio.playMusic(level.getMusic());
 				}

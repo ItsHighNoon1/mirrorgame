@@ -19,7 +19,7 @@ public class Triangle extends Enemy {
 	
 	@Override
 	public boolean shoot(Level world) {
-		if (projectile != null) {
+		if (hp <= 1 && projectile != null) {
 			projectile.tick(999.9f);
 		}
 		return super.shoot(world);
@@ -36,9 +36,9 @@ public class Triangle extends Enemy {
 			
 			shootTimer -= dt;
 			if (shootTimer < 0.0f) {
-				shootTimer = 5.0f;
+				shootTimer = 3.0f;
 				projectile = new Particle(Main.triangle, new Vector2f(getPosition().x, getPosition().y), getRotation(), 0.1f, 3.0f);
-				projectile.setVelocity(toPlayer.mul(2.0f), 0.0f);
+				projectile.setVelocity(toPlayer.mul(2.3f), 0.0f);
 				world.addParticle(projectile);
 			}
 		}

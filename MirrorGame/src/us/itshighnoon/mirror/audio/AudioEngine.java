@@ -107,6 +107,7 @@ public class AudioEngine {
 				clip.loop(Clip.LOOP_CONTINUOUSLY);
 				clip.setLoopPoints((int)sound.getLoopPoint(), -1);
 			}
+			clip.setFramePosition(cutPosition);
 			clip.start();
 			clips.add(clip);
 		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {

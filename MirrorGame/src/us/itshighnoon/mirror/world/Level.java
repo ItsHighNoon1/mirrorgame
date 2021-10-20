@@ -17,6 +17,10 @@ import us.itshighnoon.mirror.lwjgl.Loader;
 import us.itshighnoon.mirror.lwjgl.object.Texture;
 import us.itshighnoon.mirror.lwjgl.object.TexturedModel;
 import us.itshighnoon.mirror.world.enemy.Enemy;
+import us.itshighnoon.mirror.world.enemy.Hexagon;
+import us.itshighnoon.mirror.world.enemy.Octagon;
+import us.itshighnoon.mirror.world.enemy.Pentagon;
+import us.itshighnoon.mirror.world.enemy.Square;
 import us.itshighnoon.mirror.world.enemy.Triangle;
 
 public class Level {
@@ -75,12 +79,27 @@ public class Level {
 				case "e":
 					// Enemy
 					Vector2f enemyPos = new Vector2f(Float.parseFloat(lineData[2]), Float.parseFloat(lineData[3]));
-					Enemy enemy;
+					Enemy enemy = null;
 					switch (lineData[1]) {
-					default:
+					case "triangle":
 						enemy = new Triangle(new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/triangle.png")), enemyPos, 0.0f, Float.parseFloat(lineData[4]));
+						break;
+					case "square":
+						enemy = new Square(new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/square.png")), enemyPos, 0.0f, Float.parseFloat(lineData[4]));
+						break;
+					case "pentagon":
+						enemy = new Pentagon(new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/pentagon.png")), enemyPos, 0.0f, Float.parseFloat(lineData[4]));
+						break;
+					case "hexagon":
+						enemy = new Hexagon(new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/hexagon.png")), enemyPos, 0.0f, Float.parseFloat(lineData[4]));
+						break;
+					case "octagon":
+						enemy = new Octagon(new TexturedModel(loader.loadQuad(), loader.loadTexture("res/texture/octagon.png")), enemyPos, 0.0f, Float.parseFloat(lineData[4]));
+						break;
 					}
-					enemies.add(enemy);
+					if (enemy != null) {
+						enemies.add(enemy);
+					}
 					break;
 				}
 			}
@@ -137,30 +156,28 @@ public class Level {
 		}
 	}
 	
-	public Wall[] getWalls() {
-		Wall[] wallsArr = new Wall[walls.size()];
-		int i = 0;
-		for (Wall w : walls) {
-			wallsArr[i++] = w;
-		}
-		return wallsArr;
+	public List<Wall> getWalls() {
+		return walls;
 	}
 	
 	public void addWall(Wall w) {
 		walls.add(w);
 	}
 	
-	public Wall[] getMirrors() {
-		Wall[] mirrorsArr = new Wall[mirrors.size()];
-		int i = 0;
-		for (Wall w : mirrors) {
-			mirrorsArr[i++] = w;
-		}
-		return mirrorsArr;
+	public void removeWall(Wall w) {
+		walls.remove(w);
+	}
+	
+	public List<Wall> getMirrors() {
+		return mirrors;
 	}
 	
 	public void addMirror(Wall m) {
 		mirrors.add(m);
+	}
+	
+	public void removeMirror(Wall m) {
+		mirrors.remove(m);
 	}
 	
 	public Wall[] getColliders() {
@@ -183,12 +200,20 @@ public class Level {
 		floors.add(f);
 	}
 	
+	public void removeFloor(Entity f) {
+		floors.remove(f);
+	}
+	
 	public List<Enemy> getEnemies() {
 		return enemies;
 	}
 	
 	public void addEnemy(Enemy e) {
 		enemies.add(e);
+	}
+	
+	public void removeEnemy(Enemy e) {
+		enemies.remove(e);
 	}
 	
 	public List<Particle> getParticles() {
@@ -201,5 +226,9 @@ public class Level {
 	
 	public Vector2f getSpawn() {
 		return playerSpawn;
+	}
+	
+	public void setSpawn(Vector2f spawn) {
+		playerSpawn = spawn;
 	}
 }

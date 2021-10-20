@@ -54,6 +54,15 @@ public class Renderer {
 		entities.get(model).add(0, e); // i love dsa !
 	}
 	
+	public void submitWalls(List<Wall> walls) {
+		Wall[] wallsArr = new Wall[walls.size()];
+		int i = 0;
+		for (Wall w : walls) {
+			wallsArr[i++] = w;
+		}
+		submitWalls(wallsArr);
+	}
+	
 	public void submitWalls(Wall... walls) {
 		Vector4f[] packedWalls = new Vector4f[walls.length];
 		for (int i = 0; i < walls.length; i++) {
@@ -63,6 +72,15 @@ public class Renderer {
 		reflection_nWalls.loadInt(walls.length);
 		reflection_walls.loadVec4s(packedWalls);
 		reflection.stop();
+	}
+	
+	public void submitReflectors(List<Wall> mirrors) {
+		Wall[] mirrorsArr = new Wall[mirrors.size()];
+		int i = 0;
+		for (Wall m : mirrors) {
+			mirrorsArr[i++] = m;
+		}
+		submitReflectors(mirrorsArr);
 	}
 	
 	public void submitReflectors(Wall... mirrors) {

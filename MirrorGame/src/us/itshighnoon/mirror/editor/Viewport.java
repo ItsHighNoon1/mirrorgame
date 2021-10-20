@@ -13,6 +13,7 @@ import org.joml.Vector2f;
 import us.itshighnoon.mirror.world.Entity;
 import us.itshighnoon.mirror.world.Level;
 import us.itshighnoon.mirror.world.Wall;
+import us.itshighnoon.mirror.world.enemy.Enemy;
 
 public class Viewport extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -35,7 +36,7 @@ public class Viewport extends JPanel {
 	
 	@Override
 	public void paint(Graphics g) {
-		g.setColor(Color.MAGENTA);
+		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, 480, 360);
 		if (level != null) {
 			for (Entity e : level.getFloors()) {
@@ -44,7 +45,14 @@ public class Viewport extends JPanel {
 				int scale = (int)(16 * e.getScale());
 				g.drawImage(loader.getImage(e.getModel().getTexture().getTextureId()), ex, -ey, scale, scale, null);
 			}
-			g.setColor(Color.BLACK);
+			g.setColor(Color.DARK_GRAY);
+			for (int i = 0; i < 480 / 16; i++) {
+				g.drawLine(i * 16, 0, i * 16, 360);
+			}
+			for (int i = 0; i < 480 / 16; i++) {
+				g.drawLine(0, i * 16, 480, i * 16);
+			}
+			g.setColor(Color.WHITE);
 			for (Wall w : level.getWalls()) {
 				int wx1 = (int)((w.getA().x - camera.x) * CAM_WIDTH);
 				int wy1 = (int)((w.getA().y - camera.y) * CAM_WIDTH);
@@ -60,6 +68,16 @@ public class Viewport extends JPanel {
 				int wy2 = (int)((w.getB().y - camera.y) * CAM_WIDTH);
 				g.drawLine(wx1, -wy1, wx2, -wy2);
 			}
+			for (Enemy e : level.getEnemies()) {
+				int ex = (int)((e.getPosition().x - camera.x) * CAM_WIDTH - 8 * e.getScale());
+				int ey = (int)((e.getPosition().y - camera.y) * CAM_WIDTH + 8 * e.getScale());
+				int scale = (int)(16 * e.getScale());
+				g.drawImage(loader.getImage(e.getModel().getTexture().getTextureId()), ex, -ey, scale, scale, null);
+			}
+			g.setColor(Color.GREEN);
+			int sx = (int)((level.getSpawn().x - camera.x) * CAM_WIDTH) - 4;
+			int sy = (int)((level.getSpawn().y - camera.y) * CAM_WIDTH) + 4;
+			g.fillOval(sx, -sy, 8, 8);
 		}
 	}
 	

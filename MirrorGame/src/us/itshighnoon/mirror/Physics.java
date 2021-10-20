@@ -70,7 +70,7 @@ public class Physics {
 	}
 	
 	public static float distToLine(Vector2f p, Wall line) {
-		float dist = 0.0f;
+		float dist = 999.9f;
 		Vector2f a = line.getA();
 		Vector2f b = line.getB();
 		Vector2f ab = new Vector2f(b.x - a.x, b.y - a.y);

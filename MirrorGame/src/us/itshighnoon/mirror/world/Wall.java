@@ -16,8 +16,16 @@ public class Wall {
 		return a;
 	}
 	
+	public void setA(Vector2f a) {
+		this.a = a;
+	}
+	
 	public Vector2f getB() {
 		return b;
+	}
+	
+	public void setB(Vector2f b) {
+		this.b = b;
 	}
 	
 	public Vector2f getVec() {

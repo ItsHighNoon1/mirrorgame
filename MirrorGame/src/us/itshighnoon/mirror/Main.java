@@ -37,7 +37,7 @@ public class Main {
 		Framebuffer displayBuffer = window.getFramebuffer();
 		Framebuffer preRender = loader.createFbo(2048, 2048);
 		
-		Level level = new Level("res/level/test.txt", loader);
+		Level level = new Level("res/level/new.txt", loader);
 		renderer.submitWalls(level.getWalls());
 		renderer.submitReflectors(level.getMirrors());
 		
